@@ -1,0 +1,41 @@
+<div style="max-width: 420px; margin: 40px auto;">
+    <h2>Registracija</h2>
+  
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div style="margin-bottom:12px;">
+        <label>Ime</label><br />
+        <input type="text" formControlName="name" style="width:100%; padding:8px;" />
+      </div>
+  
+      <div style="margin-bottom:12px;">
+        <label>Prezime</label><br />
+        <input type="text" formControlName="surname" style="width:100%; padding:8px;" />
+      </div>
+  
+      <div style="margin-bottom:12px;">
+        <label>Email</label><br />
+        <input type="email" formControlName="email" style="width:100%; padding:8px;" />
+      </div>
+  
+      <div style="margin-bottom:12px;">
+        <label>Lozinka</label><br />
+        <input type="password" formControlName="password" style="width:100%; padding:8px;" />
+      </div>
+  
+      <div style="margin-bottom:12px;">
+        <label>Rola</label><br />
+        <select formControlName="role" style="width:100%; padding:8px;">
+          <option value="USER">Korisnik</option>
+          <option value="ADMIN">Admin</option>
+        </select>
+      </div>
+  
+      <button [disabled]="loading" type="submit" style="padding:8px 16px;">
+        {{ loading ? 'Registrujem...' : 'Registruj se' }}
+      </button>
+  
+      <div *ngIf="successMsg" style="margin-top:12px; color:green;">{{ successMsg }}</div>
+      <div *ngIf="errorMsg" style="margin-top:12px; color:red;">{{ errorMsg }}</div>
+    </form>
+  </div>
+  

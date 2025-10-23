@@ -1,0 +1,37 @@
+<div style="max-width: 420px; margin: 40px auto;">
+    <h2>Login</h2>
+  
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div style="margin-bottom:12px;">
+        <label>Email</label><br />
+        <input type="email" formControlName="email" style="width:100%; padding:8px;" />
+        <div *ngIf="form.controls.email.touched && form.controls.email.invalid" style="color:#c00;">
+          Unesi ispravan email.
+        </div>
+      </div>
+  
+      <div style="margin-bottom:12px;">
+        <label>Lozinka</label><br />
+        <input type="password" formControlName="password" style="width:100%; padding:8px;" />
+        <div *ngIf="form.controls.password.touched && form.controls.password.invalid" style="color:#c00;">
+          Lozinka je obavezna.
+        </div>
+      </div>
+  
+      <button [disabled]="loading" type="submit" style="padding:8px 16px;">
+        {{ loading ? 'Prijavljivanje...' : 'Prijavi se' }}
+      </button>
+  
+      <div *ngIf="errorMsg" 
+      style="margin-top:12px; font-weight:600;" 
+      [style.color]="errorMsg.includes('Uspešno') ? 'green' : '#c00'">
+   {{ errorMsg }}
+ </div>
+ 
+    </form>
+  </div>
+
+  <hr style="margin:16px 0;">
+<button type="button" (click)="testApi()">Testiraj /api/products (sa tokenom)</button>
+
+  

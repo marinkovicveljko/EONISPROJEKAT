@@ -1,0 +1,13 @@
+<div *ngIf="product; else errorBlock" style="max-width:600px; margin:20px auto; border:1px solid #ccc; padding:20px; border-radius:8px;">
+  <h2>{{ product.name }}</h2>
+  <p>{{ product.description }}</p>
+  <p><b>Cena: {{ product.price }} RSD</b></p>
+  <button (click)="addToCart()" 
+  style="padding:8px 16px; background:#1976d2; color:white; border:none; border-radius:4px; cursor:pointer;">
+Dodaj u korpu
+</button>
+</div>
+
+<ng-template #errorBlock>
+  <p style="color:red; text-align:center;">{{ errorMsg }}</p>
+</ng-template>

@@ -1,0 +1,46 @@
+<div style="margin:20px;">
+  <h2>🛒 Vaša korpa</h2>
+
+  <div *ngIf="items.length > 0; else praznaKorpa">
+    <table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse: collapse; margin-top:20px;">
+      <thead style="background:#1976d2; color:white;">
+        <tr>
+          <th>Proizvod</th>
+          <th>Opis</th>
+          <th>Cena (RSD)</th>
+          <th>Akcija</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of items">
+          <td>{{ item.name }}</td>
+          <td>{{ item.description }}</td>
+          <td>{{ item.price }}</td>
+          <td>
+            <button (click)="removeFromCart(item.id)" 
+                    style="padding:4px 10px; border:none; border-radius:4px; background:#c00; color:white; cursor:pointer;">
+              Ukloni
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 style="text-align:right; margin-top:20px;">Ukupno: {{ totalPrice }} RSD</h3>
+
+    <button (click)="checkout()"
+        style="margin-top:10px; padding:8px 16px; border:none; background:#1976d2; color:white; border-radius:4px; cursor:pointer;">
+  Naruči proizvode
+</button>
+
+
+    <button (click)="clearCart()" 
+            style="margin-top:10px; padding:8px 16px; border:none; background:#555; color:white; border-radius:4px; cursor:pointer;">
+      Isprazni korpu
+    </button>
+  </div>
+
+  <ng-template #praznaKorpa>
+    <p style="color:#c00; margin-top:20px;">Korpa je prazna.</p>
+  </ng-template>
+</div>
