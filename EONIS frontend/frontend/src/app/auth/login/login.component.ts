@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
-import { ProductsService } from '../../products/products.service'; // 👈 dodaj servis za test API-ja
+import { ProductsService } from '../../products/products.service';
 
 @Component({
   selector: 'app-login',
@@ -21,7 +21,7 @@ export class LoginComponent {
     private fb: FormBuilder,
     private auth: AuthService,
     private router: Router,
-    private products: ProductsService // 👈 ubaci ga u konstruktor
+    private products: ProductsService
   ) {}
 
   submit() {
@@ -34,29 +34,38 @@ export class LoginComponent {
     const { email, password } = this.form.value;
     this.loading = true;
 
-    this.auth.login(email!, password!).subscribe({
-      next: token => {
+    this.auth.login({ email: email!, password: password! }).subscribe({
+      next: (res) => {
         this.loading = false;
-        localStorage.setItem('token', token); // čuvamo JWT
-        console.log('Token sa backenda:', token);
-        alert('Login uspešan!');
-        this.router.navigateByUrl('/'); // za sada na početnu
+
+        // Ako backend vraća { token, user }
+        if (res.token) {
+          localStorage.setItem('token', res.token);
+        }
+
+        if (res.user) {
+          localStorage.setItem('user', JSON.stringify(res.user));
+          console.log('Ulogovani korisnik:', res.user);
+        }
+
+        alert('✅ Login uspešan!');
+        this.router.navigateByUrl('/');
       },
-      error: err => {
+      error: (err) => {
         this.loading = false;
         this.errorMsg = typeof err?.error === 'string' ? err.error : 'Login failed';
       }
     });
   }
 
-  // 👇 Dodaj test metodu
+  // 👇 test API metoda
   testApi() {
     this.products.getAll().subscribe({
-      next: data => {
+      next: (data) => {
         console.log('PROIZVODI:', data);
         alert('Poziv /api/products uspeo! (vidi Console)');
       },
-      error: err => {
+      error: (err) => {
         console.error('Greška:', err);
         alert('Neuspešan poziv /api/products (vidi Console)');
       }

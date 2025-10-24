@@ -1,41 +1,41 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
-export interface RegisterPayload {
-  name: string;
-  surname: string;
-  email: string;
-  password: string;
-  role: string;
-}
-
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthService {
-  private baseUrl = 'http://localhost:8081/api/auth';
+
+  private apiUrl = 'http://localhost:8081/api/auth';
 
   constructor(private http: HttpClient) {}
 
-  
-  login(email: string, password: string): Observable<string> {
-    return this.http.post(this.baseUrl + '/login', { email, password }, { responseType: 'text' })
-      .pipe(tap(token => localStorage.setItem('token', token)));
+  // 👇 login prima jedan objekat (credentials)
+  login(credentials: { email: string; password: string }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/login`, credentials);
   }
-  
-  
-  register(payload: RegisterPayload): Observable<string> {
-    return this.http.post(this.baseUrl + '/register', payload, { responseType: 'text' });
+
+  // opcionalno: metoda za registraciju
+  register(data: { name: string; surname: string; email: string; password: string }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/register`, data);
   }
-  
+
+  // 👇 helper za proveru da li je korisnik ulogovan
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem('token');
+  }
+
+  // 👇 helper za logout
   logout(): void {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
   }
 
-  get token(): string | null {
-    return localStorage.getItem('token');
+  getCurrentUser(): any {
+    const raw = localStorage.getItem('user');
+    try { return raw ? JSON.parse(raw) : null; } catch { return null; }
   }
-
-  isLoggedIn(): boolean {
-    return !!this.token;
-  }
+  
+  
 }

@@ -28,7 +28,8 @@ public class SecurityConfig {
                 .cors(cors -> {}) // 👈 uključujemo CORS
                 .authorizeHttpRequests(auth -> auth
                 	    .requestMatchers("/api/auth/**").permitAll()
-                	    .requestMatchers("/api/products/**").permitAll() // proizvodi dostupni svima
+                	    .requestMatchers("/api/products/**").permitAll()
+                	    .requestMatchers("/api/orders/**").authenticated() // 👈 sad sme samo ulogovan korisnik
                 	    .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 	    .anyRequest().authenticated()
                 	)

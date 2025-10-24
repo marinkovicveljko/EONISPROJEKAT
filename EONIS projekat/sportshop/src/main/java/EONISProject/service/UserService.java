@@ -8,6 +8,7 @@ import EONISProject.model.User;
 import EONISProject.repository.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -68,6 +69,11 @@ public class UserService {
     }
 
     public User searchByEmail(String email) {
+        return userRepo.findByEmail(email);
+    }
+    
+    @Transactional(readOnly = true)
+    public User getCurrentUser(String email) {
         return userRepo.findByEmail(email);
     }
 

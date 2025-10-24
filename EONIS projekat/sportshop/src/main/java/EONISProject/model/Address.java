@@ -34,7 +34,7 @@ public class Address {
     // 🔹 Order reference
     @OneToOne(optional = false)
     @JoinColumn(name = "order_id", nullable = false)
-    @JsonManagedReference
+    @JsonBackReference
     private Order order;
 
     public Address() {}

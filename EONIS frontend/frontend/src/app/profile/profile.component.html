@@ -1,0 +1,16 @@
+<div class="profile-container" *ngIf="user">
+  <h2>👤 Moj profil</h2>
+
+  <p><strong>Ime:</strong> {{ user.name }}</p>
+  <p><strong>Prezime:</strong> {{ user.surname }}</p>
+  <p><strong>Email:</strong> {{ user.email }}</p>
+  <p><strong>Uloga:</strong> {{ user.role }}</p>
+
+  <button (click)="togglePasswordForm()">🔑 Promeni lozinku</button>
+
+  <form *ngIf="showPasswordForm" [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+    <input type="password" formControlName="oldPassword" placeholder="Stara lozinka" />
+    <input type="password" formControlName="newPassword" placeholder="Nova lozinka" />
+    <button type="submit">Sačuvaj</button>
+  </form>
+</div>

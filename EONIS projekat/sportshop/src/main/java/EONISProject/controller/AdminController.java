@@ -1,7 +1,6 @@
 package EONISProject.controller;
 
 import EONISProject.dto.*;
-import EONISProject.exception.BadRequestException;
 import EONISProject.exception.NotFoundException;
 import EONISProject.model.*;
 import EONISProject.repository.*;
@@ -148,52 +147,25 @@ public class AdminController {
 
     // ------------------- ORDERS -------------------
     @GetMapping("/orders")
-    public List<OrderCreateDto> getAllOrders() {
-        return orderRepository.findAll().stream()
-                .map(o -> new OrderCreateDto(
-                        o.getId(),
-                        o.getUser().getId(),
-                        o.getStatus(),
-                        o.getTotalPrice(),
-                        o.getShippingDate(),
-                        o.getDiscount(),
-                        o.getNote()
-                ))
-                .collect(Collectors.toList());
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
     }
 
     @PutMapping("/orders/{id}/status")
-    public ResponseEntity<OrderCreateDto> updateOrderStatus(@PathVariable Integer id,
-                                                            @RequestParam String status) {
+    public ResponseEntity<Order> updateOrderStatus(@PathVariable Integer id,
+                                                   @RequestParam String status) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Order not found: " + id));
 
         order.setStatus(status);
         Order updated = orderRepository.save(order);
 
-        return ResponseEntity.ok(new OrderCreateDto(
-                updated.getId(),
-                updated.getUser().getId(),
-                updated.getStatus(),
-                updated.getTotalPrice(),
-                updated.getShippingDate(),
-                updated.getDiscount(),
-                updated.getNote()
-        ));
+        return ResponseEntity.ok(updated);
     }
 
     // ------------------- PAYMENTS -------------------
     @GetMapping("/payments")
-    public List<PaymentCreateDto> getAllPayments() {
-        return paymentRepository.findAll().stream()
-                .map(p -> new PaymentCreateDto(
-                        p.getId(),
-                        p.getMethod(),
-                        p.getStatus(),
-                        p.getAmount(),
-                        p.getPaymentDate(),
-                        p.getOrder().getId()
-                ))
-                .collect(Collectors.toList());
+    public List<Payment> getAllPayments() {
+        return paymentRepository.findAll();
     }
 }

@@ -1,0 +1,16 @@
+<h2>📦 Moje porudžbine</h2>
+
+<mat-progress-spinner *ngIf="loading" mode="indeterminate"></mat-progress-spinner>
+
+<mat-list *ngIf="!loading && orders.length > 0">
+  <mat-list-item *ngFor="let order of orders">
+    <div class="order-item">
+      <p><strong>ID:</strong> {{ order.id }}</p>
+      <p><strong>Status:</strong> {{ order.status }}</p>
+      <p><strong>Ukupno:</strong> {{ order.totalPrice }} RSD</p>
+      <p><strong>Kreirano:</strong> {{ order.createdDate | date }}</p>
+    </div>
+  </mat-list-item>
+</mat-list>
+
+<p *ngIf="!loading && orders.length === 0">Nema porudžbina.</p>

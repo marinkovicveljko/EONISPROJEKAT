@@ -1,29 +1,47 @@
-// src/app/cart.service.ts
 import { Injectable } from '@angular/core';
-import { Product } from '../products/product.model'; 
+import { Router } from '@angular/router';
+import { Product } from '../products/product.model';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class CartService {
-  private items: Product[] = [];
+  private items: { product: Product; quantity: number }[] = [];
 
-  getItems(): any[] {
-    const items = localStorage.getItem('cart');
-    return items ? JSON.parse(items) : [];
+  constructor(private router: Router) {}
+
+  addToCart(product: Product) {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('⚠️ Morate se prvo ulogovati da bi dodali u korpu.');
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    const existing = this.items.find(i => i.product.id === product.id);
+    if (existing) {
+      existing.quantity++;
+    } else {
+      this.items.push({ product, quantity: 1 });
+    }
   }
 
-  addToCart(product: any) {
-    this.items.push(product);
-    this.saveItems(this.items);
+  getItems() {
+    return this.items;
   }
-  
 
-  clearCart(): Product[] {
+  clearCart() {
     this.items = [];
     return this.items;
   }
 
-  saveItems(items: any[]) {
-    localStorage.setItem('cart', JSON.stringify(items));
-  }
+    // 👇 dodajemo metodu za brisanje proizvoda iz korpe
+    removeItem(productId: number) {
+      this.items = this.items.filter(i => i.product.id !== productId);
+    }
   
+    // 👇 dodajemo metodu za ukupnu cenu
+    getTotal(): number {
+      return this.items.reduce((acc, i) => acc + i.product.price * i.quantity, 0);
+    }
 }

@@ -1,0 +1,32 @@
+.my-orders {
+  max-width: 800px;
+  margin: 40px auto 0; /* 👈 odvoji od navbar-a */
+}
+
+.order-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.order-card h3 {
+  margin-top: 0;
+  color: #2c3e50;
+}
+
+.status-new {
+  color: green;
+  font-weight: bold;
+}
+
+.status-done {
+  color: blue;
+  font-weight: bold;
+}
+
+ul {
+  margin: 8px 0 0 0;
+  padding-left: 18px;
+}

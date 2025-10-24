@@ -2,7 +2,10 @@ package EONISProject.controller;
 
 
 import jakarta.validation.Valid;
+
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import EONISProject.dto.UserCreateDto;
@@ -61,6 +64,12 @@ public class UserController {
     public ResponseEntity<User> searchByEmail(@RequestParam String email) {
         return ResponseEntity.ok(userService.searchByEmail(email));
     }
-
+    
+    @GetMapping("/me")
+    public ResponseEntity<User> getCurrentUser(Authentication authentication) {
+        String email = authentication.getName(); // email iz tokena
+        User user = userService.getCurrentUser(email);
+        return ResponseEntity.ok(user);
+    }
 
 }

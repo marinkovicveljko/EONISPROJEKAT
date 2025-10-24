@@ -1,0 +1,45 @@
+<div class="container">
+    <h2>Admin - Upravlja proizvode</h2>
+  
+    <form [formGroup]="productForm" (ngSubmit)="submit()" class="form">
+      <input formControlName="name" placeholder="Naziv" />
+      <input formControlName="description" placeholder="Opis" />
+      <input formControlName="price" type="number" placeholder="Cena" />
+      <input formControlName="stock" type="number" placeholder="Na stanju" />
+      <input formControlName="categoryId" type="number" placeholder="Kategorija ID" />
+  
+      <button type="submit">
+        {{ editingProduct ? 'Sačuvaj izmene' : 'Dodaj proizvod' }}
+      </button>
+      <button type="button" *ngIf="editingProduct" (click)="cancelEdit()">Otkaži</button>
+    </form>
+  
+    <hr />
+  
+    <table>
+      <thead>
+        <tr>
+          <th>Naziv</th>
+          <th>Opis</th>
+          <th>Cena</th>
+          <th>Na stanju</th>
+          <th>Kategorija</th>
+          <th>Akcije</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of products">
+          <td>{{ p.name }}</td>
+          <td>{{ p.description }}</td>
+          <td>{{ p.price | currency:'EUR' }}</td>
+          <td>{{ p.stock }}</td>
+          <td>{{ p.categoryId }}</td>
+          <td>
+            <button (click)="edit(p)">Izmeni</button>
+            <button (click)="delete(p.id)">Obriši</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  

@@ -27,11 +27,14 @@ public class OrderItemController {
         return orderItemService.getAll();
     }
 
-    @PostMapping
-    public ResponseEntity<OrderItem> create(@RequestBody @Valid OrderItemCreateDto dto) {
-        OrderItem saved = orderItemService.create(dto);
+    // ➝ Dodaj stavku u određenu porudžbinu
+    @PostMapping("/order/{orderId}")
+    public ResponseEntity<OrderItem> create(@PathVariable Integer orderId,
+                                            @RequestBody @Valid OrderItemCreateDto dto) {
+        OrderItem saved = orderItemService.create(orderId, dto);
         return ResponseEntity.ok(saved);
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<OrderItem> update(@PathVariable Integer id,
                                             @RequestBody @Valid OrderItemCreateDto dto) {
@@ -44,5 +47,4 @@ public class OrderItemController {
         orderItemService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
 }

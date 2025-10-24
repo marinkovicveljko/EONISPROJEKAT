@@ -1,46 +1,25 @@
-<div style="margin:20px;">
-  <h2>🛒 Vaša korpa</h2>
+<h2>🛒 Moja korpa</h2>
 
-  <div *ngIf="items.length > 0; else praznaKorpa">
-    <table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse: collapse; margin-top:20px;">
-      <thead style="background:#1976d2; color:white;">
-        <tr>
-          <th>Proizvod</th>
-          <th>Opis</th>
-          <th>Cena (RSD)</th>
-          <th>Akcija</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of items">
-          <td>{{ item.name }}</td>
-          <td>{{ item.description }}</td>
-          <td>{{ item.price }}</td>
-          <td>
-            <button (click)="removeFromCart(item.id)" 
-                    style="padding:4px 10px; border:none; border-radius:4px; background:#c00; color:white; cursor:pointer;">
-              Ukloni
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+<mat-card *ngFor="let item of items" class="cart-item">
+  <img [src]="item.product.imageUrl || 'assets/no-image.png'" 
+       alt="Slika" 
+       class="item-image">
 
-    <h3 style="text-align:right; margin-top:20px;">Ukupno: {{ totalPrice }} RSD</h3>
+  <h3>{{ item.product.name }}</h3>
+  <p>Cena: {{ item.product.price }} RSD</p>
+  <p>Količina: {{ item.quantity }}</p>
+  <p>Ukupno: {{ item.product.price * item.quantity }} RSD</p>
 
-    <button (click)="checkout()"
-        style="margin-top:10px; padding:8px 16px; border:none; background:#1976d2; color:white; border-radius:4px; cursor:pointer;">
-  Naruči proizvode
-</button>
+  <button mat-button color="warn" (click)="removeFromCart(item.product.id)">Ukloni</button>
+</mat-card>
 
-
-    <button (click)="clearCart()" 
-            style="margin-top:10px; padding:8px 16px; border:none; background:#555; color:white; border-radius:4px; cursor:pointer;">
-      Isprazni korpu
-    </button>
-  </div>
-
-  <ng-template #praznaKorpa>
-    <p style="color:#c00; margin-top:20px;">Korpa je prazna.</p>
-  </ng-template>
+<h3 *ngIf="items.length">Ukupan iznos: {{ getTotal() }} RSD</h3>
+<div *ngIf="items.length" class="checkout-container">
+  <h3>Ukupan iznos: {{ getTotal() }} RSD</h3>
+  <button mat-raised-button color="primary" routerLink="/checkout">
+    Nastavi na plaćanje
+  </button>
 </div>
+
+
+<h3 *ngIf="!items.length">Korpa je prazna.</h3>

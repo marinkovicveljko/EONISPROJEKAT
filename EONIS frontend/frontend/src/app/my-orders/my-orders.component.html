@@ -1,0 +1,30 @@
+<div class="my-orders">
+  <h2>📦 Moje porudžbine</h2>
+
+  <div *ngFor="let order of orders" class="order-card">
+    <h3>🛒 Porudžbina #{{ order.id }}</h3>
+
+    <p><strong>Adresa:</strong> 
+      {{ order.address.street }}, {{ order.address.city }} {{ order.address.postalCode }}, {{ order.address.country }}
+    </p>
+
+    <p><strong>Napomena:</strong> 
+      {{ order.note || 'Nema' }}
+    </p>
+
+    <p><strong>Status:</strong> 
+      <span [ngClass]="{'status-new': order.status === 'NEW', 'status-done': order.status === 'DONE'}">
+        {{ order.status }}
+      </span>
+    </p>
+
+    <div>
+      <strong>Proizvodi:</strong>
+      <ul>
+        <li *ngFor="let item of order.items">
+          {{ item.product?.name || 'Nepoznat proizvod' }} – {{ item.quantity }} kom
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

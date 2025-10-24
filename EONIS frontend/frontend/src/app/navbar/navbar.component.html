@@ -1,0 +1,25 @@
+<header class="nav">
+  <div class="nav-left">
+    <a routerLink="/" class="brand">🏀 Sportska prodavnica</a>
+    <a routerLink="/products" routerLinkActive="active">🛍️ Proizvodi</a>
+    <a routerLink="/cart" routerLinkActive="active">🛒 Korpa</a>
+  </div>
+
+  <!-- ako NIJE ulogovan -->
+  <div class="nav-right" *ngIf="!isLoggedIn">
+    <a routerLink="/login" routerLinkActive="active">🔑 Prijava</a>
+    <a routerLink="/register" routerLinkActive="active">📝 Registracija</a>
+  </div>
+
+  <!-- ako JESTE ulogovan -->
+  <div class="nav-right" *ngIf="isLoggedIn">
+    <a routerLink="/profile" routerLinkActive="active">👤 Moj profil</a>
+    <a routerLink="/my-orders" routerLinkActive="active">📦 Moje porudžbine</a>
+
+    <span class="user-pill">
+      👋 {{ user?.name }} {{ user?.surname }} <small>({{ user?.role }})</small>
+    </span>
+
+    <button class="logout-btn" (click)="logout()">🚪 Odjava</button>
+  </div>
+</header>
