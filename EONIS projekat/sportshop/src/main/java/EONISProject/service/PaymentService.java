@@ -3,18 +3,17 @@ package EONISProject.service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.stripe.Stripe;
 import com.stripe.model.PaymentIntent;
 import com.stripe.param.PaymentIntentCreateParams;
 
-import EONISProject.dto.PaymentCreateDto;
-import EONISProject.dto.PaymentRequest;
-import EONISProject.dto.StripeWebhookEvent;
-import EONISProject.model.Payment;
-import EONISProject.model.Order;
-import EONISProject.repository.PaymentRepository;
-import EONISProject.repository.OrderRepository;
+import EONISProject.dto.*;
+import EONISProject.exception.NotFoundException;
+import EONISProject.model.*;
+import EONISProject.repository.*;
 
 import java.util.List;
 
@@ -24,7 +23,6 @@ public class PaymentService {
     private final PaymentRepository paymentRepo;
     private final OrderRepository orderRepo;
 
-    // ✅ Stripe secret key se vuče iz application.properties
     @Value("${stripe.secret.key}")
     private String stripeSecretKey;
 
@@ -34,8 +32,8 @@ public class PaymentService {
     }
 
     @Transactional(readOnly = true)
-    public List<Payment> getAll() {
-        return paymentRepo.findAll();
+    public Page<Payment> getAll(Pageable pageable) {
+        return paymentRepo.findAll(pageable);
     }
 
     @Transactional
@@ -57,10 +55,10 @@ public class PaymentService {
     @Transactional
     public Payment update(Integer id, PaymentCreateDto dto) {
         Payment existing = paymentRepo.findById(id)
-                .orElseThrow(() -> new EONISProject.exception.NotFoundException("Payment not found: " + id));
+                .orElseThrow(() -> new NotFoundException("Payment not found: " + id));
 
         Order order = orderRepo.findById(dto.orderId())
-                .orElseThrow(() -> new EONISProject.exception.NotFoundException("Order not found: " + dto.orderId()));
+                .orElseThrow(() -> new NotFoundException("Order not found: " + dto.orderId()));
 
         existing.setOrder(order);
         existing.setAmount(dto.amount());
@@ -74,27 +72,23 @@ public class PaymentService {
     @Transactional
     public void delete(Integer id) {
         Payment payment = paymentRepo.findById(id)
-                .orElseThrow(() -> new EONISProject.exception.NotFoundException("Payment not found: " + id));
-
+                .orElseThrow(() -> new NotFoundException("Payment not found: " + id));
         paymentRepo.delete(payment);
     }
 
-    // ✅ Stripe checkout
     public String processPayment(PaymentRequest request) {
         Stripe.apiKey = stripeSecretKey;
 
         try {
-            // 1. Kreiraj PaymentIntent na Stripe
             PaymentIntentCreateParams params =
                     PaymentIntentCreateParams.builder()
-                            .setAmount(request.getAmount().multiply(new java.math.BigDecimal(100)).longValue()) // u centima
+                            .setAmount(request.getAmount().multiply(new java.math.BigDecimal(100)).longValue())
                             .setCurrency(request.getCurrency() != null ? request.getCurrency().toLowerCase() : "rsd")
                             .setDescription("Order ID: " + request.getOrderId())
                             .build();
 
             PaymentIntent intent = PaymentIntent.create(params);
 
-            // 2. Poveži sa našom bazom
             Order order = orderRepo.findById(request.getOrderId())
                     .orElseThrow(() -> new RuntimeException("Order not found: " + request.getOrderId()));
 
@@ -107,7 +101,9 @@ public class PaymentService {
 
             paymentRepo.save(payment);
 
-            // 3. Vrati clientSecret frontendu (Angular ga koristi sa publishable key-om)
+            order.setStatus("CREATED");
+            orderRepo.save(order);
+
             return intent.getClientSecret();
 
         } catch (Exception e) {
@@ -115,18 +111,22 @@ public class PaymentService {
         }
     }
 
-    // ✅ Stripe webhook za potvrdu plaćanja
     public String handleWebhook(StripeWebhookEvent event) {
         Payment payment = paymentRepo.findById(event.getPaymentId())
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
 
+        Order order = payment.getOrder();
+
         if ("payment_success".equalsIgnoreCase(event.getEvent())) {
             payment.setStatus("SUCCESS");
+            order.setStatus("PAID");
         } else if ("payment_failed".equalsIgnoreCase(event.getEvent())) {
             payment.setStatus("FAILED");
+            order.setStatus("FAILED");
         }
 
         paymentRepo.save(payment);
+        orderRepo.save(order);
 
         return "Webhook processed: Payment #" + payment.getId() + " updated to " + payment.getStatus();
     }

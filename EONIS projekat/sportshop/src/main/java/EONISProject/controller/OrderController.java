@@ -1,14 +1,13 @@
 package EONISProject.controller;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import EONISProject.dto.OrderCreateDto;
 import EONISProject.model.Order;
 import EONISProject.service.OrderService;
-
-import java.util.List;
 
 @Validated
 @RestController
@@ -22,20 +21,21 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    // Vrati sve porudžbine
     @GetMapping
-    public List<Order> all() {
-        return orderService.getAll();
+    public ResponseEntity<Page<Order>> all(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return ResponseEntity.ok(orderService.getAll(pageable));
     }
 
-    // Kreiraj novu porudžbinu (na osnovu userId, adrese i stavki)
     @PostMapping
     public ResponseEntity<Order> create(@RequestBody @Valid OrderCreateDto dto) {
         Order saved = orderService.create(dto);
         return ResponseEntity.ok(saved);
     }
 
-    // Izmeni postojeću porudžbinu
     @PutMapping("/{id}")
     public ResponseEntity<Order> update(@PathVariable Integer id,
                                         @RequestBody @Valid OrderCreateDto dto) {
@@ -43,22 +43,29 @@ public class OrderController {
         return ResponseEntity.ok(updated);
     }
 
-    // Obriši porudžbinu
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         orderService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
-    // Pretraga po statusu
     @GetMapping("/search/by-status")
-    public ResponseEntity<List<Order>> searchByStatus(@RequestParam String status) {
-        return ResponseEntity.ok(orderService.searchByStatus(status));
+    public ResponseEntity<Page<Order>> searchByStatus(
+            @RequestParam String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return ResponseEntity.ok(orderService.searchByStatus(status, pageable));
     }
 
-    // Pretraga po korisniku
     @GetMapping("/search/by-user")
-    public ResponseEntity<List<Order>> searchByUser(@RequestParam Integer userId) {
-        return ResponseEntity.ok(orderService.searchByUserId(userId));
+    public ResponseEntity<Page<Order>> searchByUser(
+            @RequestParam Integer userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return ResponseEntity.ok(orderService.searchByUserId(userId, pageable));
     }
 }

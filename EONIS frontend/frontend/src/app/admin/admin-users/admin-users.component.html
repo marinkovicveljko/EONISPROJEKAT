@@ -1,6 +1,19 @@
 <div class="users-container">
   <h2>👤 Lista korisnika</h2>
 
+  <!-- Sortiranje -->
+  <mat-form-field appearance="fill">
+    <mat-label>Sortiraj po</mat-label>
+    <mat-select [(value)]="sort" (selectionChange)="loadUsers()">
+      <mat-option value="id,asc">ID (rastuće)</mat-option>
+      <mat-option value="id,desc">ID (opadajuće)</mat-option>
+      <mat-option value="name,asc">Ime (A-Z)</mat-option>
+      <mat-option value="name,desc">Ime (Z-A)</mat-option>
+      <mat-option value="surname,asc">Prezime (A-Z)</mat-option>
+      <mat-option value="surname,desc">Prezime (Z-A)</mat-option>
+    </mat-select>
+  </mat-form-field>
+
   <table class="users-table">
     <thead>
       <tr>
@@ -23,4 +36,12 @@
       </tr>
     </tbody>
   </table>
+
+  <!-- Paginacija -->
+  <mat-paginator
+    [length]="totalElements"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[5, 10, 20]"
+    (page)="changePage($event)">
+  </mat-paginator>
 </div>

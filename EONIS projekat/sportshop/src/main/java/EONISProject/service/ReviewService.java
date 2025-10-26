@@ -2,7 +2,11 @@ package EONISProject.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import EONISProject.dto.ReviewCreateDto;
+import EONISProject.exception.NotFoundException;
 import EONISProject.model.*;
 import EONISProject.repository.*;
 
@@ -22,8 +26,8 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public List<Review> getAll() {
-        return reviewRepo.findAll();
+    public Page<Review> getAll(Pageable pageable) {
+        return reviewRepo.findAll(pageable);
     }
 
     @Transactional
@@ -44,16 +48,17 @@ public class ReviewService {
 
         return reviewRepo.save(review);
     }
+
     @Transactional
     public Review update(Integer id, ReviewCreateDto dto) {
         Review existing = reviewRepo.findById(id)
-                .orElseThrow(() -> new EONISProject.exception.NotFoundException("Review not found: " + id));
+                .orElseThrow(() -> new NotFoundException("Review not found: " + id));
 
         Product product = productRepo.findById(dto.productId())
-                .orElseThrow(() -> new EONISProject.exception.NotFoundException("Product not found: " + dto.productId()));
+                .orElseThrow(() -> new NotFoundException("Product not found: " + dto.productId()));
 
         User user = userRepo.findById(dto.userId())
-                .orElseThrow(() -> new EONISProject.exception.NotFoundException("User not found: " + dto.userId()));
+                .orElseThrow(() -> new NotFoundException("User not found: " + dto.userId()));
 
         existing.setProduct(product);
         existing.setUser(user);
@@ -66,8 +71,7 @@ public class ReviewService {
     @Transactional
     public void delete(Integer id) {
         Review review = reviewRepo.findById(id)
-                .orElseThrow(() -> new EONISProject.exception.NotFoundException("Review not found: " + id));
+                .orElseThrow(() -> new NotFoundException("Review not found: " + id));
         reviewRepo.delete(review);
     }
-
 }

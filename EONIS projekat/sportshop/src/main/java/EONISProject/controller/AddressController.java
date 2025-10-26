@@ -1,14 +1,16 @@
 package EONISProject.controller;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import EONISProject.dto.AddressCreateDto;
 import EONISProject.model.Address;
 import EONISProject.service.AddressService;
-
-import java.util.List;
 
 @Validated
 @RestController
@@ -23,8 +25,12 @@ public class AddressController {
     }
 
     @GetMapping
-    public List<Address> all() {
-        return addressService.getAll();
+    public ResponseEntity<Page<Address>> all(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return ResponseEntity.ok(addressService.getAll(pageable));
     }
 
     @PostMapping
@@ -32,6 +38,7 @@ public class AddressController {
         Address saved = addressService.create(dto);
         return ResponseEntity.ok(saved);
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<Address> update(@PathVariable Integer id,
                                           @RequestBody @Valid AddressCreateDto dto) {
@@ -44,5 +51,4 @@ public class AddressController {
         addressService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
 }

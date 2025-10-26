@@ -19,11 +19,23 @@
     </form>
   </div>
 
+  <!-- Sortiranje -->
+  <mat-form-field appearance="fill">
+    <mat-label>Sortiraj po</mat-label>
+    <mat-select [(value)]="sort" (selectionChange)="loadProducts()">
+      <mat-option value="id,asc">ID (rastuće)</mat-option>
+      <mat-option value="id,desc">ID (opadajuće)</mat-option>
+      <mat-option value="name,asc">Naziv (A-Z)</mat-option>
+      <mat-option value="name,desc">Naziv (Z-A)</mat-option>
+      <mat-option value="price,asc">Cena (rastuće)</mat-option>
+      <mat-option value="price,desc">Cena (opadajuće)</mat-option>
+    </mat-select>
+  </mat-form-field>
+
   <!-- Lista proizvoda -->
   <div class="product-list">
     <h3>📦 Lista proizvoda</h3>
 
-    <!-- Header red -->
     <div class="product-header">
       <span class="img-col">Slika</span>
       <span class="name-col">Naziv</span>
@@ -33,7 +45,6 @@
       <span class="actions-col">Akcije</span>
     </div>
 
-    <!-- Proizvodi -->
     <div class="product-row" *ngFor="let p of products">
       <img [src]="p.imageUrl || 'assets/no-image.png'" alt="{{p.name}}" />
       <span class="name">{{ p.name }}</span>
@@ -47,4 +58,11 @@
     </div>
   </div>
 
+  <!-- Paginacija -->
+  <mat-paginator
+    [length]="totalElements"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[5, 10, 20]"
+    (page)="changePage($event)">
+  </mat-paginator>
 </div>

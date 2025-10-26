@@ -1,12 +1,11 @@
 package EONISProject.service;
 
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import EONISProject.dto.CategoryCreateDto;
 import EONISProject.model.Category;
 import EONISProject.repository.CategoryRepository;
-
-import java.util.List;
 
 @Service
 public class CategoryService {
@@ -18,16 +17,16 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<Category> getAll() {
-        return categoryRepo.findAll();
+    public Page<Category> getAll(Pageable pageable) {
+        return categoryRepo.findAll(pageable);
     }
 
     @Transactional
     public Category create(CategoryCreateDto dto) {
-        Category c = new Category(dto.id() ,dto.name(), dto.description());
+        Category c = new Category(dto.id(), dto.name(), dto.description());
         return categoryRepo.save(c);
     }
-    
+
     @Transactional
     public Category update(Integer id, CategoryCreateDto dto) {
         Category existing = categoryRepo.findById(id)
@@ -46,5 +45,4 @@ public class CategoryService {
 
         categoryRepo.delete(cat);
     }
-
 }

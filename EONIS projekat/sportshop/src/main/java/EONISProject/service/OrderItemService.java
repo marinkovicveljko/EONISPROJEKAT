@@ -1,5 +1,6 @@
 package EONISProject.service;
 
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import EONISProject.dto.OrderItemCreateDto;
@@ -12,7 +13,6 @@ import EONISProject.repository.OrderRepository;
 import EONISProject.repository.ProductRepository;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Service
 public class OrderItemService {
@@ -30,8 +30,8 @@ public class OrderItemService {
     }
 
     @Transactional(readOnly = true)
-    public List<OrderItem> getAll() {
-        return orderItemRepo.findAll();
+    public Page<OrderItem> getAll(Pageable pageable) {
+        return orderItemRepo.findAll(pageable);
     }
 
     @Transactional
@@ -53,11 +53,9 @@ public class OrderItemService {
                 order
         );
 
-        // smanji stock proizvoda
         product.setStock(product.getStock() - dto.quantity());
         productRepo.save(product);
 
-        // ažuriraj total order-a
         order.setTotalPrice(order.getTotalPrice().add(total));
         orderRepo.save(order);
 
@@ -82,7 +80,6 @@ public class OrderItemService {
         existing.setPricePerUnit(pricePerUnit);
         existing.setTotal(total);
 
-        // update order total price
         order.setTotalPrice(order.getItems().stream()
                 .map(OrderItem::getTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add));
@@ -98,7 +95,6 @@ public class OrderItemService {
 
         Order order = item.getOrder();
 
-        // ukloni stavku i ažuriraj total order-a
         orderItemRepo.delete(item);
         order.setTotalPrice(order.getItems().stream()
                 .filter(i -> i.getId() != id)

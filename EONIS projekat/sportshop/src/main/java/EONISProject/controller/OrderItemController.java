@@ -1,14 +1,13 @@
 package EONISProject.controller;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import EONISProject.dto.OrderItemCreateDto;
 import EONISProject.model.OrderItem;
 import EONISProject.service.OrderItemService;
-
-import java.util.List;
 
 @Validated
 @RestController
@@ -23,11 +22,14 @@ public class OrderItemController {
     }
 
     @GetMapping
-    public List<OrderItem> all() {
-        return orderItemService.getAll();
+    public ResponseEntity<Page<OrderItem>> all(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return ResponseEntity.ok(orderItemService.getAll(pageable));
     }
 
-    // ➝ Dodaj stavku u određenu porudžbinu
     @PostMapping("/order/{orderId}")
     public ResponseEntity<OrderItem> create(@PathVariable Integer orderId,
                                             @RequestBody @Valid OrderItemCreateDto dto) {

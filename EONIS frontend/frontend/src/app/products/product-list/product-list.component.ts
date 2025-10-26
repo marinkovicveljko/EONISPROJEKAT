@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ProductService } from '../product.service';
 import { Product } from '../product.model';
 import { CartService } from '../../cart/cart.service';
-import { SearchService } from '../../shared/search.service'; // dodaj ovo
+import { SearchService } from '../../shared/search.service';
 
 @Component({
   selector: 'app-product-list',
@@ -11,26 +11,33 @@ import { SearchService } from '../../shared/search.service'; // dodaj ovo
 })
 export class ProductListComponent implements OnInit {
   products: Product[] = [];
-  filteredProducts: Product[] = []; 
+  filteredProducts: Product[] = [];
+
+  // paginacija i sortiranje
+  page = 0;
+  size = 12;
+  totalElements = 0;
+  sort = 'name,asc';
 
   constructor(
     private productService: ProductService,
     private cartService: CartService,
-    private searchService: SearchService  
+    private searchService: SearchService
   ) {}
 
   ngOnInit(): void {
-    this.productService.getAll().subscribe({
-      next: (data) => {
-        this.products = data;
-        this.filteredProducts = data; 
+    this.fetchProducts();
+    this.searchService.searchTerm$.subscribe(term => this.applyFilter(term));
+  }
+
+  fetchProducts() {
+    this.productService.getAll(this.page, this.size, this.sort).subscribe({
+      next: (res) => {
+        this.products = res.content || [];
+        this.filteredProducts = this.products;
+        this.totalElements = res.totalElements;
       },
       error: (err) => console.error('Greška pri učitavanju proizvoda', err),
-    });
-
-    
-    this.searchService.searchTerm$.subscribe(term => {
-      this.applyFilter(term);
     });
   }
 
@@ -46,5 +53,16 @@ export class ProductListComponent implements OnInit {
   addToCart(product: Product): void {
     this.cartService.addToCart(product);
     alert(`${product.name} je dodat u korpu!`);
+  }
+
+  changePage(event: any) {
+    this.page = event.pageIndex;
+    this.size = event.pageSize;
+    this.fetchProducts();
+  }
+
+  changeSort(sortField: string) {
+    this.sort = sortField;
+    this.fetchProducts();
   }
 }

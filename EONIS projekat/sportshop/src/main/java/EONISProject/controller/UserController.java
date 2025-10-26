@@ -1,9 +1,7 @@
 package EONISProject.controller;
 
-
 import jakarta.validation.Valid;
-
-
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
@@ -12,8 +10,6 @@ import EONISProject.dto.UserCreateDto;
 import EONISProject.model.User;
 import EONISProject.service.UserService;
 
-import java.util.List;
-
 @Validated
 @RestController
 @RequestMapping("/api/users")
@@ -21,27 +17,28 @@ import java.util.List;
 public class UserController {
 	
 	private final UserService userService;
-
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @GetMapping
-    public List<User> all() {
-        return userService.getAll();
+    public ResponseEntity<Page<User>> all(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return ResponseEntity.ok(userService.getAll(pageable));
     }
 
     @PostMapping
     public ResponseEntity<User> create(@RequestBody @Valid UserCreateDto dto) {
-        User saved = userService.create(dto);
-        return ResponseEntity.ok(saved);
+        return ResponseEntity.ok(userService.create(dto));
     }
     
     @PutMapping("/{id}")
     public ResponseEntity<User> update(@PathVariable Integer id,
                                        @RequestBody @Valid UserCreateDto dto) {
-        User updated = userService.update(id, dto);
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(userService.update(id, dto));
     }
 
     @DeleteMapping("/{id}")
@@ -51,13 +48,23 @@ public class UserController {
     }
     
     @GetMapping("/search/by-name")
-    public ResponseEntity<List<User>> searchByName(@RequestParam String name) {
-        return ResponseEntity.ok(userService.searchByName(name));
+    public ResponseEntity<Page<User>> searchByName(
+            @RequestParam String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return ResponseEntity.ok(userService.searchByName(name, pageable));
     }
 
     @GetMapping("/search/by-surname")
-    public ResponseEntity<List<User>> searchBySurname(@RequestParam String surname) {
-        return ResponseEntity.ok(userService.searchBySurname(surname));
+    public ResponseEntity<Page<User>> searchBySurname(
+            @RequestParam String surname,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return ResponseEntity.ok(userService.searchBySurname(surname, pageable));
     }
 
     @GetMapping("/search/by-email")
@@ -67,9 +74,7 @@ public class UserController {
     
     @GetMapping("/me")
     public ResponseEntity<User> getCurrentUser(Authentication authentication) {
-        String email = authentication.getName(); // email iz tokena
-        User user = userService.getCurrentUser(email);
-        return ResponseEntity.ok(user);
+        String email = authentication.getName();
+        return ResponseEntity.ok(userService.getCurrentUser(email));
     }
-
 }

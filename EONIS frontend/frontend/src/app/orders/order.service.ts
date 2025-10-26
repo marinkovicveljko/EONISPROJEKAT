@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Order } from './order';
 
@@ -7,37 +7,41 @@ import { Order } from './order';
   providedIn: 'root'
 })
 export class OrderService {
-
-  private apiUrl = 'http://localhost:8081/api/orders'; // Backend URL
+  private apiUrl = 'http://localhost:8081/api/orders';
 
   constructor(private http: HttpClient) {}
 
-  // Kreiranje nove porudžbine
   createOrder(orderDto: any): Observable<Order> {
     return this.http.post<Order>(this.apiUrl, orderDto);
   }
 
-  // Preuzimanje svih porudžbina
-  getOrders(): Observable<Order[]> {
-    return this.http.get<Order[]>(this.apiUrl);
+  // ✅ Sve porudžbine sa pagingom i sortiranjem
+  getOrders(page: number, size: number, sort: string): Observable<any> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+      .set('sort', sort);
+    return this.http.get<any>(this.apiUrl, { params });
   }
 
-  // Pretraga po korisniku
-  getOrdersByUser(userId: number): Observable<Order[]> {
-    return this.http.get<Order[]>(`${this.apiUrl}/search/by-user?userId=${userId}`);
+  getOrdersByUser(userId: number, page: number, size: number): Observable<any> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size);
+    return this.http.get<any>(`${this.apiUrl}/search/by-user?userId=${userId}`, { params });
   }
 
-  // Pretraga po statusu
-  getOrdersByStatus(status: string): Observable<Order[]> {
-    return this.http.get<Order[]>(`${this.apiUrl}/search/by-status?status=${status}`);
+  getOrdersByStatus(status: string, page: number, size: number): Observable<any> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size);
+    return this.http.get<any>(`${this.apiUrl}/search/by-status?status=${status}`, { params });
   }
 
-  // ✅ Admin: promena statusa
   updateStatus(id: number, status: string): Observable<Order> {
     return this.http.put<Order>(`${this.apiUrl}/${id}/status`, { status });
   }
 
-  // ✅ Admin: otkazivanje porudžbine
   deleteOrder(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }

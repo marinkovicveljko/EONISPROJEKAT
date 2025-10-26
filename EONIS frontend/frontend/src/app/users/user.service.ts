@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from './user';
 
@@ -23,12 +23,17 @@ export class UserService {
       newPassword
     });
   }
-  getAllUsers(): Observable<User[]> {
-    return this.http.get<User[]>(this.apiUrl); // apiUrl = 'http://localhost:8081/api/users'
+
+  // ✅ Sa pagingom i sortiranjem
+  getAllUsers(page: number, size: number, sort: string): Observable<any> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+      .set('sort', sort);
+    return this.http.get<any>(this.apiUrl, { params });
   }
-  
+
   deleteUser(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
-  
 }

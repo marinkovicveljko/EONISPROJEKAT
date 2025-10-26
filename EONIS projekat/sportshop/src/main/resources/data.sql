@@ -11,16 +11,16 @@ VALUES ('Shoes', 'All types of sports shoes'),
 -- PRODUCTS
 INSERT INTO products (name, description, price, stock, category_id, image_url)
 VALUES 
-('Nike Air Zoom', 'Running shoes for professionals', 120.00, 10, 1, '/assets/products/slika1.jpg'),
-('Adidas Predator', 'Professional football shoes', 140.00, 15, 1, '/assets/products/2.jpg.webp'),
-('Puma Classic', 'Lifestyle sneakers', 90.00, 12, 1, '/assets/products/3.png'),
-('Asics Gel Kayano', 'Long distance running shoes', 150.00, 8, 1, '/assets/products/4.jfif'),
-('Converse Chuck Taylor', 'Casual sneakers', 70.00, 20, 1, '/assets/products/5.jpg'),
-('Dumbbell Set', 'Set of gym dumbbells', 80.00, 20, 2, '/assets/products/6.jpg.webp'),
-('Yoga Mat', 'High-quality yoga mat', 30.00, 25, 2, '/assets/products/7.webp'),
-('Kettlebell', '10kg kettlebell for strength training', 40.00, 15, 2, '/assets/products/8.webp'),
-('Resistance Bands', 'Set of 5 elastic resistance bands', 25.00, 30, 2, '/assets/products/9.webp'),
-('Pull-up Bar', 'Adjustable pull-up bar for home training', 50.00, 10, 2, '/assets/products/10.webp');
+('Push-up Bars', 'Equipment for performing push-ups, ideal for home workouts', 1800.00, 25, 1, '/assets/products/11.webp'),
+('Jump Rope', 'Professional jump rope for cardio and conditioning training', 1100.00, 50, 1, '/assets/products/12.jpg'),
+('Treadmill', 'Electric treadmill with multiple speed levels and incline settings', 65000.00, 5, 1, '/assets/products/13.jpg'),
+('Exercise Bike', 'Stationary indoor bike for gym and home training', 45000.00, 7, 1, '/assets/products/14.jpg'),
+('Workout Bench', 'Adjustable bench for bench press and various strength exercises', 5450.00, 10, 1, '/assets/products/15.jpg'),
+('Dumbbell Set', 'Set of gym dumbbells', 4000.00, 20, 2, '/assets/products/6.jpg.webp'),
+('Yoga Mat', 'High-quality yoga mat', 2100.00, 25, 2, '/assets/products/7.webp'),
+('Kettlebell', '10kg kettlebell for strength training', 4600.00, 15, 2, '/assets/products/8.webp'),
+('Resistance Bands', 'Set of 5 elastic resistance bands', 2400.00, 30, 2, '/assets/products/9.webp'),
+('Pull-up Bar', 'Adjustable pull-up bar for home training', 7500.00, 10, 2, '/assets/products/10.webp');
 
 -- ORDERS
 INSERT INTO orders (created_date, shipping_date, status, total_price, discount, note, user_id)

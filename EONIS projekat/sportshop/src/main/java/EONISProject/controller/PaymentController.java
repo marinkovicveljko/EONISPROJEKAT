@@ -1,6 +1,7 @@
 package EONISProject.controller;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +11,7 @@ import EONISProject.dto.StripeWebhookEvent;
 import EONISProject.model.Payment;
 import EONISProject.service.PaymentService;
 
-import java.util.List;
+import java.util.*;
 
 @Validated
 @RestController
@@ -25,8 +26,12 @@ public class PaymentController {
     }
 
     @GetMapping
-    public List<Payment> all() {
-        return paymentService.getAll();
+    public ResponseEntity<Page<Payment>> all(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return ResponseEntity.ok(paymentService.getAll(pageable));
     }
 
     @PostMapping
@@ -48,17 +53,14 @@ public class PaymentController {
         return ResponseEntity.noContent().build();
     }
 
-    // ✅ checkout vraća Stripe clientSecret
     @PostMapping("/checkout")
-    public ResponseEntity<String> checkout(@RequestBody @Valid PaymentRequest request) {
+    public ResponseEntity<Map<String, String>> checkout(@RequestBody @Valid PaymentRequest request) {
         String clientSecret = paymentService.processPayment(request);
-        return ResponseEntity.ok(clientSecret);
+        return ResponseEntity.ok(Map.of("clientSecret", clientSecret));
     }
 
-    // ✅ webhook updateuje status plaćanja
     @PostMapping("/webhook")
     public ResponseEntity<String> webhook(@RequestBody @Valid StripeWebhookEvent event) {
-        String result = paymentService.handleWebhook(event);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(paymentService.handleWebhook(event));
     }
 }

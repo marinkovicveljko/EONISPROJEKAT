@@ -1,6 +1,17 @@
 <div class="orders-container">
   <h2>📦 Admin - Upravljanje porudžbinama</h2>
 
+  <!-- Sortiranje -->
+  <mat-form-field appearance="fill">
+    <mat-label>Sortiraj po</mat-label>
+    <mat-select [(value)]="sort" (selectionChange)="loadOrders()">
+      <mat-option value="id,asc">ID (rastuće)</mat-option>
+      <mat-option value="id,desc">ID (opadajuće)</mat-option>
+      <mat-option value="totalPrice,asc">Cena (rastuće)</mat-option>
+      <mat-option value="totalPrice,desc">Cena (opadajuće)</mat-option>
+    </mat-select>
+  </mat-form-field>
+
   <table class="orders-table">
     <thead>
       <tr>
@@ -14,12 +25,8 @@
     <tbody>
       <tr *ngFor="let o of orders">
         <td>{{ o.id }}</td>
-        
-        <!-- Umesto [object Object], prikazujemo ime i prezime -->
         <td>{{ o.user.name }} {{ o.user.surname }}</td>
-
         <td class="price">{{ o.totalPrice | currency:'EUR' }}</td>
-
         <td>
           <ng-container *ngIf="editingOrder?.id === o.id; else viewMode">
             <form *ngIf="statusForm" [formGroup]="statusForm" (ngSubmit)="saveStatus()" class="status-form">
@@ -32,7 +39,6 @@
             <span class="status">{{ o.status }}</span>
           </ng-template>
         </td>
-
         <td class="actions">
           <button (click)="startEdit(o)" class="btn edit">✏️ Izmeni status</button>
           <button (click)="deleteOrder(o.id!)" class="btn delete">🗑️ Otkaži</button>
@@ -40,4 +46,12 @@
       </tr>
     </tbody>
   </table>
+
+  <!-- Paginacija -->
+  <mat-paginator
+    [length]="totalElements"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[5, 10, 20]"
+    (page)="changePage($event)">
+  </mat-paginator>
 </div>

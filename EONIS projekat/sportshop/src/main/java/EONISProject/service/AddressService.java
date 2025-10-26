@@ -1,5 +1,6 @@
 package EONISProject.service;
 
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import EONISProject.dto.AddressCreateDto;
@@ -9,8 +10,6 @@ import EONISProject.model.User;
 import EONISProject.repository.AddressRepository;
 import EONISProject.repository.OrderRepository;
 import EONISProject.repository.UserRepository;
-
-import java.util.List;
 
 @Service
 public class AddressService {
@@ -26,8 +25,8 @@ public class AddressService {
     }
 
     @Transactional(readOnly = true)
-    public List<Address> getAll() {
-        return addressRepo.findAll();
+    public Page<Address> getAll(Pageable pageable) {
+        return addressRepo.findAll(pageable);
     }
 
     @Transactional
@@ -49,7 +48,7 @@ public class AddressService {
 
         return addressRepo.save(address);
     }
-    
+
     @Transactional
     public Address update(Integer id, AddressCreateDto dto) {
         Address existing = addressRepo.findById(id)
@@ -73,5 +72,4 @@ public class AddressService {
                 .orElseThrow(() -> new EONISProject.exception.NotFoundException("Address not found: " + id));
         addressRepo.delete(address);
     }
-
 }

@@ -1,18 +1,15 @@
 package EONISProject.service;
 
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import EONISProject.dto.OrderCreateDto;
 import EONISProject.dto.OrderItemCreateDto;
-import EONISProject.model.Address;
-import EONISProject.model.Order;
-import EONISProject.model.OrderItem;
-import EONISProject.model.Product;
-import EONISProject.model.User;
-import EONISProject.repository.OrderRepository;
-import EONISProject.repository.ProductRepository;
-import EONISProject.repository.UserRepository;
+import EONISProject.exception.NotFoundException;
+import EONISProject.model.*;
+import EONISProject.repository.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -26,17 +23,16 @@ public class OrderService {
     private final UserRepository userRepo;
     private final ProductRepository productRepo;
 
-    public OrderService(OrderRepository orderRepo, UserRepository userRepo,ProductRepository productRepo) {
+    public OrderService(OrderRepository orderRepo, UserRepository userRepo, ProductRepository productRepo) {
         this.orderRepo = orderRepo;
         this.userRepo = userRepo;
         this.productRepo = productRepo;
     }
 
     @Transactional(readOnly = true)
-    public List<Order> getAll() {
-        return orderRepo.findAll();
+    public Page<Order> getAll(Pageable pageable) {
+        return orderRepo.findAll(pageable);
     }
-
 
     @Transactional
     public Order create(OrderCreateDto dto) {
@@ -74,7 +70,6 @@ public class OrderService {
         order.setItems(orderItems);
         order.setTotalPrice(totalPrice);
 
-        // 👇 dodaj adresu
         Address address = new Address();
         address.setStreet(dto.street());
         address.setCity(dto.city());
@@ -88,20 +83,18 @@ public class OrderService {
         return orderRepo.save(order);
     }
 
-
     @Transactional
     public Order update(Integer id, OrderCreateDto dto) {
         Order existing = orderRepo.findById(id)
-                .orElseThrow(() -> new EONISProject.exception.NotFoundException("Order not found: " + id));
+                .orElseThrow(() -> new NotFoundException("Order not found: " + id));
 
         User user = userRepo.findById(dto.userId())
-                .orElseThrow(() -> new EONISProject.exception.NotFoundException("User not found: " + dto.userId()));
+                .orElseThrow(() -> new NotFoundException("User not found: " + dto.userId()));
 
         existing.setUser(user);
         existing.setStatus("PENDING");
         existing.setNote(dto.note());
 
-        // ažuriraj adresu
         Address address = existing.getAddress();
         if (address == null) {
             address = new Address();
@@ -119,16 +112,17 @@ public class OrderService {
     @Transactional
     public void delete(Integer id) {
         Order order = orderRepo.findById(id)
-                .orElseThrow(() -> new EONISProject.exception.NotFoundException("Order not found: " + id));
-
+                .orElseThrow(() -> new NotFoundException("Order not found: " + id));
         orderRepo.delete(order);
     }
 
-    public List<Order> searchByStatus(String status) {
-        return orderRepo.findByStatus(status);
+    @Transactional(readOnly = true)
+    public Page<Order> searchByStatus(String status, Pageable pageable) {
+        return orderRepo.findByStatusContainingIgnoreCase(status, pageable);
     }
 
-    public List<Order> searchByUserId(Integer userId) {
-        return orderRepo.findByUserId(userId);
+    @Transactional(readOnly = true)
+    public Page<Order> searchByUserId(Integer userId, Pageable pageable) {
+        return orderRepo.findByUserId(userId, pageable);
     }
 }

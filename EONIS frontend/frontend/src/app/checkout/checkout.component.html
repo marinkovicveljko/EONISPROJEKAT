@@ -5,7 +5,7 @@
   </div>
 
   <!-- Forma -->
-  <mat-card class="checkout-form" *ngIf="!loading">
+  <mat-card class="checkout-form">
     <h2 class="checkout-title">🛍️ Završetak kupovine</h2>
 
     <form #checkoutForm="ngForm" (ngSubmit)="onSubmit()" class="form-grid">
@@ -34,6 +34,15 @@
         <textarea matInput [(ngModel)]="order.note" name="note"></textarea>
       </mat-form-field>
 
+      <!-- Stripe Card Element -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label></mat-label>
+        <input matInput style="display:none"> <!-- trik za mat-form-field -->
+        <div id="card-element" class="stripe-card" style="padding:10px; border:1px solid #ccc; border-radius:5px;"></div>
+      </mat-form-field>
+
+      <div id="card-errors" role="alert" style="color:red; margin:10px 0;"></div>
+
       <button mat-raised-button color="primary" class="confirm-btn"
               [disabled]="checkoutForm.invalid || loading">
         ✅ Potvrdi porudžbinu
@@ -42,7 +51,7 @@
   </mat-card>
 
   <!-- Korpa -->
-  <mat-card class="checkout-summary" *ngIf="cartService.getItems().length > 0 && !loading">
+  <mat-card class="checkout-summary" *ngIf="cartService.getItems().length > 0">
     <h3>🛒 Moja korpa</h3>
     <mat-list>
       <mat-list-item *ngFor="let item of cartService.getItems()">

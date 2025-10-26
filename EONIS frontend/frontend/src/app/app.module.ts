@@ -15,6 +15,8 @@ import { HomeComponent } from './home/home.component';
 import { CartComponent } from './cart/cart.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { OrderComponent } from './orders/orders.component';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -60,7 +62,9 @@ import { AdminUsersComponent } from './admin/admin-users/admin-users.component';
     MatInputModule,
     MatButtonModule,
     MatListModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatPaginatorModule,
+    MatSelectModule
  ],
   providers: [ { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true } ],
   bootstrap: [AppComponent]

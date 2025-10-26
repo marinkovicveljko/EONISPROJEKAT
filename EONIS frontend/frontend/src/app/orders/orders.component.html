@@ -14,3 +14,10 @@
 </mat-list>
 
 <p *ngIf="!loading && orders.length === 0">Nema porudžbina.</p>
+
+<!-- ✅ Paginacija -->
+<mat-paginator [length]="totalElements"
+               [pageSize]="size"
+               [pageSizeOptions]="[5, 10, 20]"
+               (page)="changePage($event)">
+</mat-paginator>

@@ -32,3 +32,22 @@
 <ng-template #nemaProizvoda>
   <p class="no-products">Nema dostupnih proizvoda.</p>
 </ng-template>
+
+<!-- ✅ Paginacija + sortiranje -->
+<div class="paginator-container">
+  <mat-form-field>
+    <mat-label>Sortiraj po</mat-label>
+    <mat-select (selectionChange)="changeSort($event.value)">
+      <mat-option value="id,asc">ID (rastuce)</mat-option>
+      <mat-option value="id,desc">ID (opadajuce)</mat-option>
+      <mat-option value="price,asc">Cena (najniža)</mat-option>
+      <mat-option value="price,desc">Cena (najviša)</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-paginator [length]="totalElements"
+                 [pageSize]="size"
+                 [pageSizeOptions]="[6, 12, 24]"
+                 (page)="changePage($event)">
+  </mat-paginator>
+</div>

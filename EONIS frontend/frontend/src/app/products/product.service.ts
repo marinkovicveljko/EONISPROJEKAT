@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -10,34 +10,32 @@ export class ProductService {
 
   constructor(private http: HttpClient) {}
 
-  // Vrati sve proizvode
-  getAll(): Observable<any[]> {
-    return this.http.get<any[]>(this.baseUrl);
+  // ✅ Svi proizvodi sa pagingom i sortiranjem
+  getAll(page: number, size: number, sort: string): Observable<any> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+      .set('sort', sort);
+    return this.http.get<any>(this.baseUrl, { params });
   }
 
-  // Vrati proizvod po ID-u
   getById(id: number): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/${id}`);
   }
 
-  // Dodaj novi proizvod
   create(product: any): Observable<any> {
     return this.http.post<any>(this.baseUrl, product);
   }
 
-  // Izmeni proizvod
   update(id: number, product: any): Observable<any> {
     return this.http.put<any>(`${this.baseUrl}/${id}`, product);
   }
 
-  // Obriši proizvod
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 
-  // Dohvati proizvod po ID-u
-getProductById(id: number): Observable<any> {
-  return this.http.get<any>(`${this.baseUrl}/${id}`);
-}
-
+  getProductById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/${id}`);
+  }
 }

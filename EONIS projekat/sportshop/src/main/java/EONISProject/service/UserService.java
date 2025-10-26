@@ -3,12 +3,13 @@ package EONISProject.service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import EONISProject.dto.UserCreateDto;
+import EONISProject.exception.NotFoundException;
 import EONISProject.model.User;
 import EONISProject.repository.UserRepository;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -22,8 +23,8 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<User> getAll() {
-        return userRepo.findAll();
+    public Page<User> getAll(Pageable pageable) {
+        return userRepo.findAll(pageable);
     }
 
     @Transactional
@@ -31,20 +32,20 @@ public class UserService {
         if (userRepo.existsByEmail(dto.email())) {
             throw new IllegalArgumentException("Email already registered!");
         }
-        User u = new User(dto.name(), dto.surname(), dto.email(), dto.password(), dto.role());
+        User u = new User(dto.name(), dto.surname(), dto.email(), passwordEncoder.encode(dto.password()), dto.role());
         return userRepo.save(u);
     }
+
     @Transactional
     public User update(Integer id, UserCreateDto dto) {
         User existing = userRepo.findById(id)
-                .orElseThrow(() -> new EONISProject.exception.NotFoundException("User not found: " + id));
+                .orElseThrow(() -> new NotFoundException("User not found: " + id));
 
         existing.setName(dto.name());
         existing.setSurname(dto.surname());
         existing.setEmail(dto.email());
         existing.setRole(dto.role());
 
-        // ako DTO sadrži password i nije prazan, re-encode
         if (dto.password() != null && !dto.password().isBlank()) {
             existing.setPassword(passwordEncoder.encode(dto.password()));
         }
@@ -55,19 +56,22 @@ public class UserService {
     @Transactional
     public void delete(Integer id) {
         User user = userRepo.findById(id)
-                .orElseThrow(() -> new EONISProject.exception.NotFoundException("User not found: " + id));
+                .orElseThrow(() -> new NotFoundException("User not found: " + id));
 
         userRepo.delete(user);
     }
     
-    public List<User> searchByName(String name) {
-        return userRepo.findByNameContainingIgnoreCase(name);
+    @Transactional(readOnly = true)
+    public Page<User> searchByName(String name, Pageable pageable) {
+        return userRepo.findByNameContainingIgnoreCase(name, pageable);
     }
 
-    public List<User> searchBySurname(String surname) {
-        return userRepo.findBySurnameContainingIgnoreCase(surname);
+    @Transactional(readOnly = true)
+    public Page<User> searchBySurname(String surname, Pageable pageable) {
+        return userRepo.findBySurnameContainingIgnoreCase(surname, pageable);
     }
 
+    @Transactional(readOnly = true)
     public User searchByEmail(String email) {
         return userRepo.findByEmail(email);
     }
@@ -76,5 +80,4 @@ public class UserService {
     public User getCurrentUser(String email) {
         return userRepo.findByEmail(email);
     }
-
 }

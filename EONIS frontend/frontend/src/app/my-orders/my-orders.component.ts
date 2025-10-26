@@ -11,6 +11,11 @@ export class MyOrdersComponent implements OnInit {
   orders: Order[] = [];
   loading = true;
 
+  // paginacija
+  page = 0;
+  size = 10;
+  totalElements = 0;
+
   constructor(private orderService: OrderService) {}
 
   ngOnInit(): void {
@@ -19,8 +24,6 @@ export class MyOrdersComponent implements OnInit {
 
   fetchOrders() {
     this.loading = true;
-
-    // ✅ Preuzmi userId iz localStorage (setuješ ga kad se user uloguje)
     const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
     if (!currentUser || !currentUser.id) {
       console.error('❌ Nema user-a u localStorage');
@@ -29,9 +32,10 @@ export class MyOrdersComponent implements OnInit {
       return;
     }
 
-    this.orderService.getOrdersByUser(currentUser.id).subscribe({
-      next: (orders) => {
-        this.orders = orders || [];
+    this.orderService.getOrdersByUser(currentUser.id, this.page, this.size).subscribe({
+      next: (res) => {
+        this.orders = res.content || [];
+        this.totalElements = res.totalElements;
         this.loading = false;
       },
       error: (err) => {
@@ -40,5 +44,11 @@ export class MyOrdersComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  changePage(event: any) {
+    this.page = event.pageIndex;
+    this.size = event.pageSize;
+    this.fetchOrders();
   }
 }

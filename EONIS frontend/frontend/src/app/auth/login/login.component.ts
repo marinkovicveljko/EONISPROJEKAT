@@ -61,7 +61,7 @@ export class LoginComponent {
 
   // 👇 test API metoda
   testApi() {
-    this.product.getAll().subscribe({
+    this.product.getAll(0, 5 , 'id').subscribe({
       next: (data) => {
         console.log('PROIZVODI:', data);
         alert('Poziv /api/products uspeo! (vidi Console)');

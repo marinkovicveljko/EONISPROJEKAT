@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../users/user.service';
 import { User } from '../../users/user';
+import { PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-admin-users',
@@ -10,6 +11,12 @@ import { User } from '../../users/user';
 export class AdminUsersComponent implements OnInit {
   users: User[] = [];
 
+  // paging + sort
+  totalElements = 0;
+  page = 0;
+  pageSize = 10;
+  sort = 'id,desc';
+
   constructor(private userService: UserService) {}
 
   ngOnInit(): void {
@@ -17,8 +24,11 @@ export class AdminUsersComponent implements OnInit {
   }
 
   loadUsers(): void {
-    this.userService.getAllUsers().subscribe({
-      next: (data) => (this.users = data),
+    this.userService.getAllUsers(this.page, this.pageSize, this.sort).subscribe({
+      next: (res) => {
+        this.users = res.content;
+        this.totalElements = res.totalElements;
+      },
       error: (err) => console.error('Greška pri učitavanju korisnika', err)
     });
   }
@@ -26,11 +36,22 @@ export class AdminUsersComponent implements OnInit {
   deleteUser(id: number): void {
     if (confirm('Da li ste sigurni da želite da obrišete ovog korisnika?')) {
       this.userService.deleteUser(id).subscribe({
-        next: () => {
-          this.users = this.users.filter(user => user.id !== id);
-        },
+        next: () => this.loadUsers(),
         error: (err) => console.error('Greška pri brisanju korisnika', err)
       });
     }
+  }
+
+  changePage(event: PageEvent) {
+    this.page = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadUsers();
+  }
+
+  setSort(field: string) {
+    const [currField, currDir] = this.sort.split(',');
+    const dir = (currField === field && currDir === 'asc') ? 'desc' : 'asc';
+    this.sort = `${field},${dir}`;
+    this.loadUsers();
   }
 }

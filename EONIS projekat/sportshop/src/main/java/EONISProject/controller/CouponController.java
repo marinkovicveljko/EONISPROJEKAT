@@ -1,14 +1,13 @@
 package EONISProject.controller;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import EONISProject.dto.CouponCreateDto;
 import EONISProject.model.Coupon;
 import EONISProject.service.CouponService;
-
-import java.util.List;
 
 @Validated
 @RestController
@@ -23,8 +22,12 @@ public class CouponController {
     }
 
     @GetMapping
-    public List<Coupon> all() {
-        return couponService.getAll();
+    public ResponseEntity<Page<Coupon>> all(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return ResponseEntity.ok(couponService.getAll(pageable));
     }
 
     @PostMapping
@@ -32,6 +35,7 @@ public class CouponController {
         Coupon saved = couponService.create(dto);
         return ResponseEntity.ok(saved);
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<Coupon> update(@PathVariable Integer id,
                                          @RequestBody @Valid CouponCreateDto dto) {
@@ -44,10 +48,9 @@ public class CouponController {
         couponService.delete(id);
         return ResponseEntity.noContent().build();
     }
-    
+
     @GetMapping("/search/by-code")
     public ResponseEntity<Coupon> searchByCode(@RequestParam String code) {
         return ResponseEntity.ok(couponService.searchByCode(code));
     }
-
 }

@@ -2,12 +2,20 @@
   <div *ngFor="let order of orders" class="order-card">
     <div class="order-header">
       <h3>📦 Porudžbina #{{ order.id }}</h3>
-      <span class="order-status">{{ order.status }}</span>
+      <span class="order-status"
+            [ngClass]="{
+              'status-paid': order.status === 'PAID',
+              'status-failed': order.status === 'FAILED',
+              'status-created': order.status === 'CREATED'
+            }">
+        {{ order.status }}
+      </span>
     </div>
 
-    <p><b>Status:</b> {{ order.status }}</p>
-    <p><b>Datum:</b> {{ order.createdDate }}</p>
-    <p><b>Ukupno:</b> {{ order.totalPrice }} RSD</p>
+    <div class="order-meta">
+      <p><b>📅 Datum:</b> {{ order.createdDate | date:'dd.MM.yyyy' }}</p>
+      <p><b>💰 Ukupno:</b> {{ order.totalPrice }} RSD</p>
+    </div>
 
     <h4 class="section-title">🛍️ Proizvodi:</h4>
     <div *ngFor="let item of order.items" class="order-item">
@@ -18,13 +26,22 @@
         <p><b>{{ item.product.name }}</b></p>
         <p>Količina: {{ item.quantity }}</p>
         <p>Cena: {{ item.product.price }} RSD</p>
-        <p>Ukupno: {{ item.total }} RSD</p>
+        <p><b>Ukupno: {{ item.total }} RSD</b></p>
       </div>
     </div>
 
     <h4 class="section-title">📍 Adresa:</h4>
     <div class="address-box">
-      {{ order.address.street }}, {{ order.address.city }} {{ order.address.postalCode }}, {{ order.address.country }}
+      {{ order.address.street }}, 
+      {{ order.address.city }} {{ order.address.postalCode }}, 
+      {{ order.address.country }}
     </div>
   </div>
 </div>
+
+<!-- ✅ Paginacija -->
+<mat-paginator [length]="totalElements"
+               [pageSize]="size"
+               [pageSizeOptions]="[5, 10, 20]"
+               (page)="changePage($event)">
+</mat-paginator>

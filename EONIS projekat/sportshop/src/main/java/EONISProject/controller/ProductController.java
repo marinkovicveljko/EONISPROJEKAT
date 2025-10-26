@@ -1,44 +1,43 @@
 package EONISProject.controller;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import EONISProject.dto.ProductCreateDto;
 import EONISProject.model.Product;
 import EONISProject.service.ProductService;
-import EONISProject.repository.ProductRepository;
-
-import java.util.List;
 
 @Validated
 @RestController
 @RequestMapping("/api/products")
 @CrossOrigin(origins = "http://localhost:4200")
 public class ProductController {
-	
-    private final ProductService productService;
 
-    // Jedini konstruktor – samo servis!
+    private final ProductService productService;
     public ProductController(ProductService productService) {
         this.productService = productService;
     }
 
     @GetMapping
-    public List<Product> all() {
-        return productService.getAll();
+    public ResponseEntity<Page<Product>> all(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return ResponseEntity.ok(productService.getAll(pageable));
     }
 
     @PostMapping
     public ResponseEntity<Product> create(@RequestBody @Valid ProductCreateDto dto) {
-        Product saved = productService.create(dto);
-        return ResponseEntity.ok(saved);
+        return ResponseEntity.ok(productService.create(dto));
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<Product> update(@PathVariable Integer id,
                                           @RequestBody @Valid ProductCreateDto dto) {
-        Product updated = productService.update(id, dto);
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(productService.update(id, dto));
     }
 
     @DeleteMapping("/{id}")
@@ -46,7 +45,7 @@ public class ProductController {
         productService.delete(id);
         return ResponseEntity.noContent().build();
     }
-    
+
     @GetMapping("/{id}")
     public ResponseEntity<Product> getById(@PathVariable Integer id) {
         return productService.getById(id)
@@ -54,16 +53,23 @@ public class ProductController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    
     @GetMapping("/search/by-name")
-    public ResponseEntity<List<Product>> searchByName(@RequestParam String name) {
-        return ResponseEntity.ok(productService.searchByName(name));
+    public ResponseEntity<Page<Product>> searchByName(
+            @RequestParam String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return ResponseEntity.ok(productService.searchByName(name, pageable));
     }
-    
+
     @GetMapping("/search/by-category")
-    public ResponseEntity<List<Product>> searchByCategory(@RequestParam Integer categoryId) {
-        return ResponseEntity.ok(productService.searchByCategory(categoryId));
+    public ResponseEntity<Page<Product>> searchByCategory(
+            @RequestParam Integer categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return ResponseEntity.ok(productService.searchByCategory(categoryId, pageable));
     }
-
-
 }
