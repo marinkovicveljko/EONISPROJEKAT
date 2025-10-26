@@ -1,37 +1,35 @@
-<div style="max-width: 420px; margin: 40px auto;">
-    <h2>Login</h2>
-  
+<div class="login-wrapper">
+  <div class="login-box">
+    <h2 class="login-title">🔑 Prijava</h2>
+
     <form [formGroup]="form" (ngSubmit)="submit()">
-      <div style="margin-bottom:12px;">
-        <label>Email</label><br />
-        <input type="email" formControlName="email" style="width:100%; padding:8px;" />
-        <div *ngIf="form.controls.email.touched && form.controls.email.invalid" style="color:#c00;">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" type="email" formControlName="email" />
+        <div *ngIf="form.controls.email.touched && form.controls.email.invalid" class="error">
           Unesi ispravan email.
         </div>
       </div>
-  
-      <div style="margin-bottom:12px;">
-        <label>Lozinka</label><br />
-        <input type="password" formControlName="password" style="width:100%; padding:8px;" />
-        <div *ngIf="form.controls.password.touched && form.controls.password.invalid" style="color:#c00;">
+
+      <div class="form-group">
+        <label for="password">Lozinka</label>
+        <input id="password" type="password" formControlName="password" />
+        <div *ngIf="form.controls.password.touched && form.controls.password.invalid" class="error">
           Lozinka je obavezna.
         </div>
       </div>
-  
-      <button [disabled]="loading" type="submit" style="padding:8px 16px;">
-        {{ loading ? 'Prijavljivanje...' : 'Prijavi se' }}
+
+      <button [disabled]="loading" type="submit" class="btn">
+        {{ loading ? '⏳ Prijavljivanje...' : 'Prijavi se' }}
       </button>
-  
-      <div *ngIf="errorMsg" 
-      style="margin-top:12px; font-weight:600;" 
-      [style.color]="errorMsg.includes('Uspešno') ? 'green' : '#c00'">
-   {{ errorMsg }}
- </div>
- 
+
+      <div *ngIf="errorMsg" class="message" [ngClass]="{'success': errorMsg.includes('Uspešno'), 'error': !errorMsg.includes('Uspešno')}">
+        {{ errorMsg }}
+      </div>
     </form>
+
+    <div class="register-link">
+      Nemate profil? <a routerLink="/register">Registrujte se</a>
+    </div>
   </div>
-
-  <hr style="margin:16px 0;">
-<button type="button" (click)="testApi()">Testiraj /api/products (sa tokenom)</button>
-
-  
+</div>

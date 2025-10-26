@@ -7,10 +7,10 @@ public class PaymentRequest {
 	private BigDecimal amount;
 	private String currency;
 	private String paymentMethod;
-	public int getUserId() {
+	public int getOrderId() {
 		return orderId;
 	}
-	public void setUserId(int orderId) {
+	public void setOrderId(int orderId) {
 		this.orderId = orderId;
 	}
 	public BigDecimal getAmount() {

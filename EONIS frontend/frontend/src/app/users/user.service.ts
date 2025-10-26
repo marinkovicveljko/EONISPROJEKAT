@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { User } from './user';
 
 @Injectable({
   providedIn: 'root'
@@ -22,4 +23,12 @@ export class UserService {
       newPassword
     });
   }
+  getAllUsers(): Observable<User[]> {
+    return this.http.get<User[]>(this.apiUrl); // apiUrl = 'http://localhost:8081/api/users'
+  }
+  
+  deleteUser(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+  
 }

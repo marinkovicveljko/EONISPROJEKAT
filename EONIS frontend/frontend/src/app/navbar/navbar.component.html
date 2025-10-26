@@ -3,21 +3,42 @@
     <a routerLink="/" class="brand">🏀 Sportska prodavnica</a>
     <a routerLink="/products" routerLinkActive="active">🛍️ Proizvodi</a>
     <a routerLink="/cart" routerLinkActive="active">🛒 Korpa</a>
+    <input 
+    type="text" 
+    placeholder="Pretraži proizvode..." 
+    [(ngModel)]="searchTerm" 
+    (input)="onSearch()" 
+    class="search-box"
+  />
+  
   </div>
 
-  <!-- ako NIJE ulogovan -->
+  <!-- Ako nije ulogovan -->
   <div class="nav-right" *ngIf="!isLoggedIn">
     <a routerLink="/login" routerLinkActive="active">🔑 Prijava</a>
     <a routerLink="/register" routerLinkActive="active">📝 Registracija</a>
   </div>
 
-  <!-- ako JESTE ulogovan -->
+  <!-- Ako jeste ulogovan -->
   <div class="nav-right" *ngIf="isLoggedIn">
-    <a routerLink="/profile" routerLinkActive="active">👤 Moj profil</a>
-    <a routerLink="/my-orders" routerLinkActive="active">📦 Moje porudžbine</a>
 
+    <!-- USER meni -->
+    <ng-container *ngIf="isUser">
+      <a routerLink="/profile" routerLinkActive="active">👤 Moj profil</a>
+      <a routerLink="/my-orders" routerLinkActive="active">📦 Moje porudžbine</a>
+    </ng-container>
+
+    <!-- ADMIN meni -->
+    <ng-container *ngIf="isAdmin">
+      <a routerLink="/admin/users" routerLinkActive="active">👥 Korisnici</a>
+      <a routerLink="/admin/products" routerLinkActive="active">📦 Proizvodi</a>
+      <a routerLink="/admin/orders" routerLinkActive="active">🧾 Porudžbine</a>
+    </ng-container>
+
+    <!-- Ulogovani user info -->
     <span class="user-pill">
-      👋 {{ user?.name }} {{ user?.surname }} <small>({{ user?.role }})</small>
+      👋 {{ user?.name }} {{ user?.surname }}
+      <small>({{ user?.role }})</small>
     </span>
 
     <button class="logout-btn" (click)="logout()">🚪 Odjava</button>

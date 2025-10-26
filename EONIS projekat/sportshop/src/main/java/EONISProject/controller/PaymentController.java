@@ -34,6 +34,7 @@ public class PaymentController {
         Payment saved = paymentService.create(dto);
         return ResponseEntity.ok(saved);
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<Payment> update(@PathVariable Integer id,
                                           @RequestBody @Valid PaymentCreateDto dto) {
@@ -46,17 +47,18 @@ public class PaymentController {
         paymentService.delete(id);
         return ResponseEntity.noContent().build();
     }
-    
+
+    // ✅ checkout vraća Stripe clientSecret
     @PostMapping("/checkout")
     public ResponseEntity<String> checkout(@RequestBody @Valid PaymentRequest request) {
-        String result = paymentService.processPayment(request);
-        return ResponseEntity.ok(result);
+        String clientSecret = paymentService.processPayment(request);
+        return ResponseEntity.ok(clientSecret);
     }
-    
+
+    // ✅ webhook updateuje status plaćanja
     @PostMapping("/webhook")
     public ResponseEntity<String> webhook(@RequestBody @Valid StripeWebhookEvent event) {
         String result = paymentService.handleWebhook(event);
         return ResponseEntity.ok(result);
     }
-
 }

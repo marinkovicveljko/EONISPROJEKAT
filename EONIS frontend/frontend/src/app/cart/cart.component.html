@@ -1,25 +1,38 @@
-<h2>🛒 Moja korpa</h2>
+<h2 class="cart-title">🛒 Moja korpa</h2>
 
-<mat-card *ngFor="let item of items" class="cart-item">
-  <img [src]="item.product.imageUrl || 'assets/no-image.png'" 
-       alt="Slika" 
-       class="item-image">
+<div *ngIf="items.length; else prazna" class="cart-container">
+  <div *ngFor="let item of items" class="cart-item">
+    <img [src]="item.product.imageUrl || 'assets/no-image.png'" 
+         alt="Slika" 
+         class="item-image">
 
-  <h3>{{ item.product.name }}</h3>
-  <p>Cena: {{ item.product.price }} RSD</p>
-  <p>Količina: {{ item.quantity }}</p>
-  <p>Ukupno: {{ item.product.price * item.quantity }} RSD</p>
+    <div class="item-details">
+      <h3>{{ item.product.name }}</h3>
+      <p>Cena: <strong>{{ item.product.price }} RSD</strong></p>
+      <p>Količina: {{ item.quantity }}</p>
+      <p>Ukupno: <strong>{{ item.product.price * item.quantity }} RSD</strong></p>
+    </div>
 
-  <button mat-button color="warn" (click)="removeFromCart(item.product.id)">Ukloni</button>
-</mat-card>
+    <button mat-stroked-button color="warn" (click)="removeFromCart(item.product.id)">
+      ❌ Ukloni
+    </button>
+  </div>
 
-<h3 *ngIf="items.length">Ukupan iznos: {{ getTotal() }} RSD</h3>
-<div *ngIf="items.length" class="checkout-container">
-  <h3>Ukupan iznos: {{ getTotal() }} RSD</h3>
-  <button mat-raised-button color="primary" routerLink="/checkout">
-    Nastavi na plaćanje
-  </button>
+  <!-- Dugmići i ukupan iznos -->
+  <div class="cart-actions">
+    <h3>Ukupan iznos: <span>{{ getTotal() }} RSD</span></h3>
+
+    <div class="action-buttons">
+      <button mat-stroked-button color="warn" (click)="clearCart()">
+        ❌ Ukloni sve
+      </button>
+      <button mat-raised-button color="primary" routerLink="/checkout">
+        ✅ Nastavi na plaćanje
+      </button>
+    </div>
+  </div>
 </div>
 
-
-<h3 *ngIf="!items.length">Korpa je prazna.</h3>
+<ng-template #prazna>
+  <h3 class="empty-cart">🛒 Korpa je prazna.</h3>
+</ng-template>

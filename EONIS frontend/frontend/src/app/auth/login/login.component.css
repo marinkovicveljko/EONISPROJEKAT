@@ -1,0 +1,101 @@
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 90vh;
+    background: #f4f4f4;
+  }
+  
+  .login-box {
+    background: #fff;
+    padding: 40px 32px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+  }
+  
+  .login-title {
+    font-size: 26px;
+    margin-bottom: 25px;
+    color: #222;
+  }
+  
+  .form-group {
+    text-align: left;
+    margin-bottom: 18px;
+  }
+  
+  .form-group label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: inline-block;
+    color: #333;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+  }
+  
+  .form-group input:focus {
+    border-color: #ff9800;
+    outline: none;
+    box-shadow: 0 0 4px rgba(255,152,0,0.4);
+  }
+  
+  .btn {
+    width: 100%;
+    padding: 14px;
+    background: #ff9800;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .btn:hover {
+    background: #e68900;
+  }
+  
+  .error {
+    color: #c00;
+    font-size: 13px;
+    margin-top: 4px;
+  }
+  
+  .message {
+    margin-top: 12px;
+    font-weight: 600;
+  }
+  
+  .message.success {
+    color: green;
+  }
+  
+  .message.error {
+    color: #c00;
+  }
+  
+  .register-link {
+    margin-top: 20px;
+    font-size: 15px;
+  }
+  
+  .register-link a {
+    color: #ff9800;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  
+  .register-link a:hover {
+    text-decoration: underline;
+  }
+  

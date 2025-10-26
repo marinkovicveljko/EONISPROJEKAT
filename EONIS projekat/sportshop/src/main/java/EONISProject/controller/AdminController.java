@@ -71,7 +71,8 @@ public class AdminController {
                         p.getDescription(),
                         p.getPrice(),
                         p.getStock(),
-                        p.getCategory().getId()
+                        p.getCategory().getId(),
+                        p.getImageUrl()
                 ))
                 .collect(Collectors.toList());
     }
@@ -87,16 +88,21 @@ public class AdminController {
                 p.getDescription(),
                 p.getPrice(),
                 p.getStock(),
-                p.getCategory().getId()
+                p.getCategory().getId(),
+                p.getImageUrl()
         ));
     }
 
+ // CREATE
     @PostMapping("/products")
     public ResponseEntity<ProductCreateDto> createProduct(@RequestBody @Valid ProductCreateDto dto) {
-        Category cat = categoryRepository.findById(dto.categoryId())
-                .orElseThrow(() -> new NotFoundException("Category not found: " + dto.categoryId()));
+        // uvek uzimamo kategoriju 1
+        Category cat = categoryRepository.findById(1)
+                .orElseThrow(() -> new NotFoundException("Default category not found"));
 
         Product p = new Product(dto.name(), dto.description(), dto.price(), dto.stock(), cat);
+        p.setImageUrl(dto.imageUrl());
+
         Product saved = productRepository.save(p);
 
         return ResponseEntity.ok(new ProductCreateDto(
@@ -105,23 +111,27 @@ public class AdminController {
                 saved.getDescription(),
                 saved.getPrice(),
                 saved.getStock(),
-                saved.getCategory().getId()
+                1,
+                saved.getImageUrl()
         ));
     }
 
+    // UPDATE
     @PutMapping("/products/{id}")
     public ResponseEntity<ProductCreateDto> updateProduct(@PathVariable Integer id,
                                                           @RequestBody @Valid ProductCreateDto dto) {
         Product existing = productRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Product not found: " + id));
 
-        Category cat = categoryRepository.findById(dto.categoryId())
-                .orElseThrow(() -> new NotFoundException("Category not found: " + dto.categoryId()));
+        // opet automatski kategorija 1
+        Category cat = categoryRepository.findById(1)
+                .orElseThrow(() -> new NotFoundException("Default category not found"));
 
         existing.setName(dto.name());
         existing.setDescription(dto.description());
         existing.setPrice(dto.price() != null ? dto.price() : BigDecimal.ZERO);
         existing.setStock(dto.stock());
+        existing.setImageUrl(dto.imageUrl());
         existing.setCategory(cat);
 
         Product updated = productRepository.save(existing);
@@ -132,9 +142,11 @@ public class AdminController {
                 updated.getDescription(),
                 updated.getPrice(),
                 updated.getStock(),
-                updated.getCategory().getId()
+                1,
+                updated.getImageUrl()
         ));
     }
+
 
     @DeleteMapping("/products/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Integer id) {

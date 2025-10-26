@@ -1,7 +1,13 @@
 package EONISProject.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.stripe.Stripe;
+import com.stripe.model.PaymentIntent;
+import com.stripe.param.PaymentIntentCreateParams;
+
 import EONISProject.dto.PaymentCreateDto;
 import EONISProject.dto.PaymentRequest;
 import EONISProject.dto.StripeWebhookEvent;
@@ -17,6 +23,10 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepo;
     private final OrderRepository orderRepo;
+
+    // ✅ Stripe secret key se vuče iz application.properties
+    @Value("${stripe.secret.key}")
+    private String stripeSecretKey;
 
     public PaymentService(PaymentRepository paymentRepo, OrderRepository orderRepo) {
         this.paymentRepo = paymentRepo;
@@ -43,6 +53,7 @@ public class PaymentService {
 
         return paymentRepo.save(payment);
     }
+
     @Transactional
     public Payment update(Integer id, PaymentCreateDto dto) {
         Payment existing = paymentRepo.findById(id)
@@ -55,6 +66,7 @@ public class PaymentService {
         existing.setAmount(dto.amount());
         existing.setPaymentDate(dto.paymentDate());
         existing.setMethod(dto.method());
+        existing.setStatus(dto.status());
 
         return paymentRepo.save(existing);
     }
@@ -66,22 +78,44 @@ public class PaymentService {
 
         paymentRepo.delete(payment);
     }
-    
+
+    // ✅ Stripe checkout
     public String processPayment(PaymentRequest request) {
-    	if(request.getAmount() == null || request.getAmount().compareTo(java.math.BigDecimal.ZERO) <= 0)
-    	{
-        return "Payment failed, amount must be greater than 0";
-    	}
-    	Payment payment = new Payment();
-    	payment.setAmount(request.getAmount());
-    	
-    	payment.setStatus("SUCCESS");
-    	
-    	paymentRepo.save(payment);
-    	
-        return "Payment successful! Amount: " + request.getAmount() +
-                (request.getCurrency() != null ? (" " + request.getCurrency()) : "");
-     }
+        Stripe.apiKey = stripeSecretKey;
+
+        try {
+            // 1. Kreiraj PaymentIntent na Stripe
+            PaymentIntentCreateParams params =
+                    PaymentIntentCreateParams.builder()
+                            .setAmount(request.getAmount().multiply(new java.math.BigDecimal(100)).longValue()) // u centima
+                            .setCurrency(request.getCurrency() != null ? request.getCurrency().toLowerCase() : "rsd")
+                            .setDescription("Order ID: " + request.getOrderId())
+                            .build();
+
+            PaymentIntent intent = PaymentIntent.create(params);
+
+            // 2. Poveži sa našom bazom
+            Order order = orderRepo.findById(request.getOrderId())
+                    .orElseThrow(() -> new RuntimeException("Order not found: " + request.getOrderId()));
+
+            Payment payment = new Payment();
+            payment.setAmount(request.getAmount());
+            payment.setMethod(request.getPaymentMethod() != null ? request.getPaymentMethod() : "CARD");
+            payment.setStatus("CREATED");
+            payment.setPaymentDate(java.time.LocalDate.now());
+            payment.setOrder(order);
+
+            paymentRepo.save(payment);
+
+            // 3. Vrati clientSecret frontendu (Angular ga koristi sa publishable key-om)
+            return intent.getClientSecret();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Stripe greška: " + e.getMessage(), e);
+        }
+    }
+
+    // ✅ Stripe webhook za potvrdu plaćanja
     public String handleWebhook(StripeWebhookEvent event) {
         Payment payment = paymentRepo.findById(event.getPaymentId())
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
@@ -90,14 +124,10 @@ public class PaymentService {
             payment.setStatus("SUCCESS");
         } else if ("payment_failed".equalsIgnoreCase(event.getEvent())) {
             payment.setStatus("FAILED");
-        } else {
-            return "Unknown event type: " + event.getEvent();
         }
 
         paymentRepo.save(payment);
+
         return "Webhook processed: Payment #" + payment.getId() + " updated to " + payment.getStatus();
     }
-  } 
-
-
-
+}

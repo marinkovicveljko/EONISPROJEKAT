@@ -1,32 +1,34 @@
-<div *ngIf="products.length > 0; else nemaProizvoda"
-  style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:20px; margin:20px;">
+<div *ngIf="filteredProducts.length > 0; else nemaProizvoda" class="product-grid">
 
-<div *ngFor="let p of products" 
-    style="border:1px solid #ddd; border-radius:8px; padding:16px; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
- 
- <!-- Naziv -->
- <h3 style="margin-bottom:10px;">{{ p.name }}</h3>
- 
- <!-- Opis -->
- <p style="min-height:50px; font-size:14px; color:#555;">{{ p.description }}</p>
- 
- <!-- Cena -->
- <p style="font-weight:bold; margin:10px 0;">{{ p.price }} RSD</p>
- 
- <!-- Dugme za detalje proizvoda -->
- <button [routerLink]="['/products', p.id]" 
-         style="margin-right:8px; padding:6px 12px; border:none; background:#555; color:white; border-radius:4px; cursor:pointer;">
-   Detalji
- </button>
+  <div *ngFor="let p of filteredProducts" class="product-card">
 
- <!-- Dugme za dodavanje u korpu -->
- <button (click)="addToCart(p)" 
-         style="padding:6px 12px; border:none; background:#1976d2; color:white; border-radius:4px; cursor:pointer;">
-   🛒 Dodaj u korpu
- </button>
-</div>
+    <!-- Slika proizvoda -->
+    <img [src]="p.imageUrl || 'assets/placeholder.png'" 
+         alt="{{ p.name }}" 
+         class="product-img" />
+
+    <!-- Naziv -->
+    <h3 class="product-title">{{ p.name }}</h3>
+
+    <!-- Opis -->
+    <p class="product-desc">{{ p.description }}</p>
+
+    <!-- Cena -->
+    <p class="product-price">{{ p.price | currency:'RSD':'symbol':'1.0-0' }}</p>
+
+    <!-- Dugmad -->
+    <div class="product-actions">
+      <button [routerLink]="['/products', p.id]" class="btn btn-dark">
+        Detalji
+      </button>
+      <button (click)="addToCart(p)" class="btn btn-primary">
+        🛒 Dodaj u korpu
+      </button>
+    </div>
+
+  </div>
 </div>
 
 <ng-template #nemaProizvoda>
-<p style="text-align:center; color:#c00;">Nema dostupnih proizvoda.</p>
+  <p class="no-products">Nema dostupnih proizvoda.</p>
 </ng-template>

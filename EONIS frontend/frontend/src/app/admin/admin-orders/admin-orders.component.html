@@ -1,0 +1,43 @@
+<div class="orders-container">
+  <h2>📦 Admin - Upravljanje porudžbinama</h2>
+
+  <table class="orders-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Korisnik</th>
+        <th>Ukupna cena</th>
+        <th>Status</th>
+        <th>Akcije</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let o of orders">
+        <td>{{ o.id }}</td>
+        
+        <!-- Umesto [object Object], prikazujemo ime i prezime -->
+        <td>{{ o.user.name }} {{ o.user.surname }}</td>
+
+        <td class="price">{{ o.totalPrice | currency:'EUR' }}</td>
+
+        <td>
+          <ng-container *ngIf="editingOrder?.id === o.id; else viewMode">
+            <form *ngIf="statusForm" [formGroup]="statusForm" (ngSubmit)="saveStatus()" class="status-form">
+              <input formControlName="status" />
+              <button type="submit" class="btn save">Sačuvaj</button>
+              <button type="button" (click)="cancelEdit()" class="btn cancel">Otkaži</button>
+            </form>
+          </ng-container>
+          <ng-template #viewMode>
+            <span class="status">{{ o.status }}</span>
+          </ng-template>
+        </td>
+
+        <td class="actions">
+          <button (click)="startEdit(o)" class="btn edit">✏️ Izmeni status</button>
+          <button (click)="deleteOrder(o.id!)" class="btn delete">🗑️ Otkaži</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

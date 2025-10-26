@@ -25,6 +25,8 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { ProfileComponent } from './profile/profile.component';
 import { MyOrdersComponent } from './my-orders/my-orders.component';
 import { AdminProductsComponent } from './admin/admin-products/admin-products.component';
+import { AdminOrdersComponent } from './admin/admin-orders/admin-orders.component';
+import { AdminUsersComponent } from './admin/admin-users/admin-users.component';
 
 
 @NgModule({
@@ -42,6 +44,8 @@ import { AdminProductsComponent } from './admin/admin-products/admin-products.co
     ProfileComponent,
     MyOrdersComponent,
     AdminProductsComponent,
+    AdminOrdersComponent,
+    AdminUsersComponent,
     
   ],
   imports: [

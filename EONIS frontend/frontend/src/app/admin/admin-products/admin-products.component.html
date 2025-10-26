@@ -1,45 +1,50 @@
-<div class="container">
-    <h2>Admin - Upravlja proizvode</h2>
-  
-    <form [formGroup]="productForm" (ngSubmit)="submit()" class="form">
-      <input formControlName="name" placeholder="Naziv" />
-      <input formControlName="description" placeholder="Opis" />
-      <input formControlName="price" type="number" placeholder="Cena" />
-      <input formControlName="stock" type="number" placeholder="Na stanju" />
-      <input formControlName="categoryId" type="number" placeholder="Kategorija ID" />
-  
-      <button type="submit">
-        {{ editingProduct ? 'Sačuvaj izmene' : 'Dodaj proizvod' }}
-      </button>
-      <button type="button" *ngIf="editingProduct" (click)="cancelEdit()">Otkaži</button>
+<div class="admin-products-container">
+
+  <!-- Forma za dodavanje / izmenu proizvoda -->
+  <div class="product-form">
+    <h3>{{ editingProduct ? '✏️ Izmeni proizvod' : '➕ Dodaj novi proizvod' }}</h3>
+
+    <form [formGroup]="productForm" (ngSubmit)="submit()">
+      <div class="form-row">
+        <input formControlName="name" placeholder="Naziv proizvoda" />
+        <input formControlName="description" placeholder="Opis proizvoda" />
+        <input formControlName="price" type="number" step="0.01" placeholder="Cena (RSD)" />
+        <input formControlName="stock" type="number" placeholder="Na stanju" />
+        <input formControlName="imageUrl" placeholder="URL slike" />
+        <button type="submit" [disabled]="productForm.invalid">
+          {{ editingProduct ? '💾 Sačuvaj' : '➕ Dodaj proizvod' }}
+        </button>
+        <button type="button" (click)="cancelEdit()" *ngIf="editingProduct">❌</button>
+      </div>
     </form>
-  
-    <hr />
-  
-    <table>
-      <thead>
-        <tr>
-          <th>Naziv</th>
-          <th>Opis</th>
-          <th>Cena</th>
-          <th>Na stanju</th>
-          <th>Kategorija</th>
-          <th>Akcije</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let p of products">
-          <td>{{ p.name }}</td>
-          <td>{{ p.description }}</td>
-          <td>{{ p.price | currency:'EUR' }}</td>
-          <td>{{ p.stock }}</td>
-          <td>{{ p.categoryId }}</td>
-          <td>
-            <button (click)="edit(p)">Izmeni</button>
-            <button (click)="delete(p.id)">Obriši</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
   </div>
-  
+
+  <!-- Lista proizvoda -->
+  <div class="product-list">
+    <h3>📦 Lista proizvoda</h3>
+
+    <!-- Header red -->
+    <div class="product-header">
+      <span class="img-col">Slika</span>
+      <span class="name-col">Naziv</span>
+      <span class="desc-col">Opis</span>
+      <span class="price-col">Cena</span>
+      <span class="stock-col">Na stanju</span>
+      <span class="actions-col">Akcije</span>
+    </div>
+
+    <!-- Proizvodi -->
+    <div class="product-row" *ngFor="let p of products">
+      <img [src]="p.imageUrl || 'assets/no-image.png'" alt="{{p.name}}" />
+      <span class="name">{{ p.name }}</span>
+      <span class="desc">{{ p.description }}</span>
+      <span class="price">{{ p.price }} RSD</span>
+      <span class="stock">{{ p.stock }}</span>
+      <div class="row-buttons">
+        <button (click)="edit(p)">✏️</button>
+        <button (click)="delete(p.id)">🗑️</button>
+      </div>
+    </div>
+  </div>
+
+</div>

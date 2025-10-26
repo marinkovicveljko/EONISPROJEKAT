@@ -16,9 +16,10 @@ export class AdminProductsComponent implements OnInit {
     this.productForm = this.fb.group({
       name: ['', Validators.required],
       description: ['', Validators.required],
-      price: [0, Validators.required],
-      stock: [0, Validators.required],
-      categoryId: [null, Validators.required]
+      price: ['', [Validators.required, Validators.min(1)]],   // 👈 prazno umesto 0
+      stock: ['', [Validators.required, Validators.min(0)]],   // 👈 prazno umesto 0
+      imageUrl: ['', Validators.required],
+      categoryId: [1] // default 1
     });
   }
 
@@ -36,26 +37,49 @@ export class AdminProductsComponent implements OnInit {
     const product = this.productForm.value;
 
     if (this.editingProduct) {
+      // update
       this.productService.update(this.editingProduct.id, product).subscribe(() => {
         this.loadProducts();
         this.cancelEdit();
       });
     } else {
+      // create
       this.productService.create(product).subscribe(() => {
         this.loadProducts();
-        this.productForm.reset();
+        this.productForm.reset({
+          name: '',
+          description: '',
+          price: '',  // 👈 prazno
+          stock: '',  // 👈 prazno
+          imageUrl: '',
+          categoryId: 1
+        });
       });
     }
   }
 
   edit(product: any): void {
     this.editingProduct = product;
-    this.productForm.patchValue(product);
+    this.productForm.patchValue({
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      stock: product.stock,
+      imageUrl: product.imageUrl,
+      categoryId: 1
+    });
   }
 
   cancelEdit(): void {
     this.editingProduct = null;
-    this.productForm.reset();
+    this.productForm.reset({
+      name: '',
+      description: '',
+      price: '',
+      stock: '',
+      imageUrl: '',
+      categoryId: 1
+    });
   }
 
   delete(id: number): void {

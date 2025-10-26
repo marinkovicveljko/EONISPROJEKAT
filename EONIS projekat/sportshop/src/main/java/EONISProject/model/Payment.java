@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "payments")
@@ -29,7 +29,7 @@ public class Payment {
     // 🔹 Order reference
     @OneToOne(optional = false)
     @JoinColumn(name = "order_id", nullable = false)
-    @JsonManagedReference
+    @JsonBackReference   // 👈 OVO MORA BITI BACK jer u Order.java je MANAGED
     private Order order;
 
     public Payment() {}

@@ -48,6 +48,8 @@ public class ProductService {
                 dto.stock(),
                 category
         );
+        
+        product.setImageUrl(dto.imageUrl());
 
         return productRepo.save(product);
     }
@@ -65,6 +67,8 @@ public class ProductService {
         existing.setPrice(dto.price());
         existing.setStock(dto.stock());
         existing.setCategory(cat);
+        
+        existing.setImageUrl(dto.imageUrl());
 
         return productRepo.save(existing);
     }

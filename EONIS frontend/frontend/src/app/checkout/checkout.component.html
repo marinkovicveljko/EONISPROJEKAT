@@ -1,59 +1,57 @@
 <div class="checkout-wrapper">
-    <h2>🛍️ Završetak kupovine</h2>
-  
-    <!-- Spinner -->
-    <div *ngIf="loading" class="spinner-overlay">
-      <mat-spinner></mat-spinner>
-    </div>
-  
-    <!-- Forma -->
-    <mat-card class="checkout-form" *ngIf="!loading">
-      <form #checkoutForm="ngForm" (ngSubmit)="onSubmit()">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Adresa</mat-label>
-          <input matInput [(ngModel)]="order.street" name="street" required>
-        </mat-form-field>
-  
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Grad</mat-label>
-          <input matInput [(ngModel)]="order.city" name="city" required>
-        </mat-form-field>
-  
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Poštanski broj</mat-label>
-          <input matInput [(ngModel)]="order.postalCode" name="postalCode" required>
-        </mat-form-field>
-  
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Država</mat-label>
-          <input matInput [(ngModel)]="order.country" name="country" required>
-        </mat-form-field>
-  
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Napomena (opciono)</mat-label>
-          <textarea matInput [(ngModel)]="order.note" name="note"></textarea>
-        </mat-form-field>
-  
-        <button mat-raised-button color="primary" class="full-width" [disabled]="checkoutForm.invalid || loading">
-          ✅ Potvrdi porudžbinu
-        </button>
-      </form>
-    </mat-card>
-  
-    <!-- Korpa -->
-    <mat-card class="checkout-summary" *ngIf="cartService.getItems().length > 0 && !loading">
-      <h3>🛒 Moja korpa</h3>
-  
-      <mat-list>
-        <mat-list-item *ngFor="let item of cartService.getItems()">
-          <div class="item-details">
-            <p>{{ item.product.name }} (x{{ item.quantity }})</p>
-            <p>{{ item.product.price * item.quantity }} RSD</p>
-          </div>
-        </mat-list-item>
-      </mat-list>
-  
-      <h3 class="total">Ukupno: {{ getTotal() }} </h3>
-    </mat-card>
+  <!-- Spinner -->
+  <div *ngIf="loading" class="spinner-overlay">
+    <mat-spinner></mat-spinner>
   </div>
-  
+
+  <!-- Forma -->
+  <mat-card class="checkout-form" *ngIf="!loading">
+    <h2 class="checkout-title">🛍️ Završetak kupovine</h2>
+
+    <form #checkoutForm="ngForm" (ngSubmit)="onSubmit()" class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Adresa</mat-label>
+        <input matInput [(ngModel)]="order.street" name="street" required>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Grad</mat-label>
+        <input matInput [(ngModel)]="order.city" name="city" required>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Poštanski broj</mat-label>
+        <input matInput [(ngModel)]="order.postalCode" name="postalCode" required>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Država</mat-label>
+        <input matInput [(ngModel)]="order.country" name="country" required>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Napomena (opciono)</mat-label>
+        <textarea matInput [(ngModel)]="order.note" name="note"></textarea>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" class="confirm-btn"
+              [disabled]="checkoutForm.invalid || loading">
+        ✅ Potvrdi porudžbinu
+      </button>
+    </form>
+  </mat-card>
+
+  <!-- Korpa -->
+  <mat-card class="checkout-summary" *ngIf="cartService.getItems().length > 0 && !loading">
+    <h3>🛒 Moja korpa</h3>
+    <mat-list>
+      <mat-list-item *ngFor="let item of cartService.getItems()">
+        <div class="item-details">
+          <p><strong>{{ item.product.name }}</strong> (x{{ item.quantity }})</p>
+          <p>{{ item.product.price * item.quantity }} RSD</p>
+        </div>
+      </mat-list-item>
+    </mat-list>
+    <h3 class="total">Ukupno: {{ getTotal() }} RSD</h3>
+  </mat-card>
+</div>

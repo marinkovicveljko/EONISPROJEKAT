@@ -3,7 +3,7 @@ package EONISProject.model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "coupons")
@@ -25,7 +25,7 @@ public class Coupon {
     // 🔹 Reference to Order (1–1)
     @OneToOne
     @JoinColumn(name = "order_id", nullable = false, unique = true)
-    @JsonManagedReference
+    @JsonBackReference   // 👈 mora biti BACK da ne pravi petlju sa Order
     private Order order;
 
     public Coupon() {}

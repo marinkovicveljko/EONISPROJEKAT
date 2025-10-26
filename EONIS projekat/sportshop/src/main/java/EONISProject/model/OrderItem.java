@@ -4,11 +4,11 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "order_items")
 public class OrderItem {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -22,17 +22,18 @@ public class OrderItem {
     @Column(name = "total", nullable = false, precision = 10, scale = 2)
     private BigDecimal total;
 
-    // 🔹 Product reference
+    // Product reference
     @ManyToOne(optional = false)
     @JoinColumn(name = "product_id", nullable = false)
-    @JsonBackReference
+    @JsonIgnoreProperties({"orderItems"})  // sprečava petlju
     private Product product;
 
-    // 🔹 Order reference
+    // Order reference
     @ManyToOne(optional = false)
     @JoinColumn(name = "order_id", nullable = false)
     @JsonBackReference
     private Order order;
+
 
     public OrderItem() {}
 

@@ -5,7 +5,8 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
-  templateUrl: './register.component.html'
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.css'] 
 })
 export class RegisterComponent {
   loading = false;
@@ -41,8 +42,27 @@ export class RegisterComponent {
   
     this.auth.register(payload).subscribe({
       next: res => {
-        this.successMsg = 'Registracija uspešna!';
-        console.log('✅ Backend kaže:', res);
+        console.log('✅ Registracija uspešna:', res);
+  
+        // 👇 odmah logujemo korisnika
+        this.auth.login({ email: payload.email, password: payload.password }).subscribe({
+          next: (loginRes) => {
+            if (loginRes.token) {
+              localStorage.setItem('token', loginRes.token);
+            }
+            if (loginRes.user) {
+              localStorage.setItem('user', JSON.stringify(loginRes.user));
+            }
+  
+            alert('✅ Dobrodošli, ' + payload.name + '!');
+            this.router.navigateByUrl('/'); // prebaci na glavnu
+          },
+          error: (err) => {
+            console.error('❌ Greška pri automatskom loginu:', err);
+            alert('Registracija je uspela, ali morate da se prijavite ručno.');
+            this.router.navigateByUrl('/login');
+          }
+        });
       },
       error: err => {
         this.errorMsg = typeof err?.error === 'string' ? err.error : 'Registracija neuspešna';
@@ -51,4 +71,5 @@ export class RegisterComponent {
     });
   }
   
-}
+  }
+  

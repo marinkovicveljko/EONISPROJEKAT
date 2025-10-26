@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
-import { ProductsService } from '../../products/products.service';
+import { ProductService } from '../../products/product.service';
 
 @Component({
   selector: 'app-login',
-  templateUrl: './login.component.html'
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css'] 
 })
 export class LoginComponent {
   loading = false;
@@ -21,7 +22,7 @@ export class LoginComponent {
     private fb: FormBuilder,
     private auth: AuthService,
     private router: Router,
-    private products: ProductsService
+    private product: ProductService
   ) {}
 
   submit() {
@@ -60,7 +61,7 @@ export class LoginComponent {
 
   // 👇 test API metoda
   testApi() {
-    this.products.getAll().subscribe({
+    this.product.getAll().subscribe({
       next: (data) => {
         console.log('PROIZVODI:', data);
         alert('Poziv /api/products uspeo! (vidi Console)');

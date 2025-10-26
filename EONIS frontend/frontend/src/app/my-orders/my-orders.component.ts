@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Order } from '../orders/order';
 import { OrderService } from '../orders/order.service';
-import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-my-orders',
@@ -8,22 +8,37 @@ import { AuthService } from '../auth/auth.service';
   styleUrls: ['./my-orders.component.css']
 })
 export class MyOrdersComponent implements OnInit {
-  orders: any[] = [];
-  user: any;
+  orders: Order[] = [];
+  loading = true;
 
-  constructor(private orderService: OrderService, private auth: AuthService) {}
+  constructor(private orderService: OrderService) {}
 
   ngOnInit(): void {
-    this.user = this.auth.getCurrentUser();
-    if (this.user) {
-      this.orderService.getOrdersByUser(this.user.id).subscribe({
-        next: (data) => {
-          this.orders = data;
-        },
-        error: (err) => {
-          console.error('❌ Greška pri učitavanju porudžbina:', err);
-        }
-      });
+    this.fetchOrders();
+  }
+
+  fetchOrders() {
+    this.loading = true;
+
+    // ✅ Preuzmi userId iz localStorage (setuješ ga kad se user uloguje)
+    const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+    if (!currentUser || !currentUser.id) {
+      console.error('❌ Nema user-a u localStorage');
+      this.orders = [];
+      this.loading = false;
+      return;
     }
+
+    this.orderService.getOrdersByUser(currentUser.id).subscribe({
+      next: (orders) => {
+        this.orders = orders || [];
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('❌ Greška pri učitavanju porudžbina:', err);
+        this.orders = [];
+        this.loading = false;
+      }
+    });
   }
 }

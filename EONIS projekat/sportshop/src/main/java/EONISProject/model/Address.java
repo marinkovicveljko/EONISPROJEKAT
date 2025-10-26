@@ -1,6 +1,7 @@
 package EONISProject.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
@@ -8,7 +9,6 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "addresses")
 public class Address {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -25,13 +25,13 @@ public class Address {
     @Column(nullable = false, length = 50)
     private String country;
 
-    // 🔹 User reference
+    // User reference
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
+    @JsonIgnoreProperties({"orders", "addresses"})
     private User user;
 
-    // 🔹 Order reference
+    // Order reference
     @OneToOne(optional = false)
     @JoinColumn(name = "order_id", nullable = false)
     @JsonBackReference

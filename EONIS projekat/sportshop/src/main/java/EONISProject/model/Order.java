@@ -8,57 +8,59 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "orders")
 public class Order {
-	  @Id
-	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
-	    @Column(name = "created_date", nullable = false)
-	    private LocalDate createdDate;
+    @Column(name = "created_date", nullable = false)
+    private LocalDate createdDate;
 
-	    @Column(nullable = false, length = 50)
-	    private String status;
+    @Column(nullable = false, length = 50)
+    private String status;
 
-	    @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
-	    private BigDecimal totalPrice;
+    @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
+    private BigDecimal totalPrice;
 
-	    @Column(name = "shipping_date")
-	    private LocalDate shippingDate;
+    @Column(name = "shipping_date")
+    private LocalDate shippingDate;
 
-	    @Column(name = "discount", precision = 5, scale = 2)
-	    private BigDecimal discount;
+    @Column(name = "discount", precision = 5, scale = 2)
+    private BigDecimal discount;
 
-	    @Column(name = "note", length = 500)
-	    private String note;
+    @Column(name = "note", length = 500)
+    private String note;
 
-	    // 🔹 Relationship with user
-	    @ManyToOne(optional = false)
-	    @JoinColumn(name = "user_id", nullable = false)
-	    @JsonBackReference
-	    private User user;
-	    
-	 // Address (1-1)
-	    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-	    @JsonManagedReference
-	    private Address address;
+    // User
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"orders", "addresses"}) // da ne vuče sve nazad
+    private User user;
 
-	    // Payment (1-1)
-	    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-	    @JsonManagedReference
-	    private Payment payment;
+    // Address (1-1)
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private Address address;
 
-	    // OrderItems (1-N)
-	    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-	    @JsonManagedReference
-	    private List<OrderItem> items = new ArrayList<>();
-	    
-	    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-	    @JsonManagedReference
-	    private Coupon coupon;
+    // Payment (1-1)
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private Payment payment;
+
+    // OrderItems (1-N)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<OrderItem> items = new ArrayList<>();
+
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private Coupon coupon;
+
 
 	    public Coupon getCoupon() {
 			return coupon;
